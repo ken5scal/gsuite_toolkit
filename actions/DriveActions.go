@@ -17,11 +17,16 @@ const (
 	FolderMimeType = "application/vnd.google-apps.folder"
 )
 
-func NewDriveAction(s services.Service) (*DriveAction, error) {
+func InitDriveAction() *DriveAction {
+	return &DriveAction{}
+}
+
+func (a *DriveAction) SetService(s services.Service) error {
 	if _, ok := s.(*services.DriveService); !ok {
-		return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
+		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	}
-	return &DriveAction{s.(*services.DriveService)}, nil
+	a.DriveService = s.(*services.DriveService)
+	return nil
 }
 
 func (action DriveAction) SearchFoldersWithName(title string) error {

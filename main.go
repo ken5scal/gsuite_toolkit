@@ -95,11 +95,11 @@ func main() {
 				{
 					Name: "list", Usage: "list existing files",
 					Action: func(context *cli.Context) error {
-						action, err := actions.NewDriveAction(s)
-						if err != nil {
+						a = actions.InitDriveAction()
+						if err := a.SetService(s); err != nil {
 							return err
 						}
-						return action.SearchAllFolders()
+						return nil
 					},
 				},
 				{
@@ -108,11 +108,11 @@ func main() {
 						if context.NArg() != 1 {
 							return errors.New("Number of keyword must be exactly 1")
 						}
-						action, err := actions.NewDriveAction(s)
-						if err != nil {
+						a = actions.InitDriveAction()
+						if err := a.SetService(s); err != nil {
 							return err
 						}
-						return action.SearchFoldersWithName(context.Args()[0])
+						return a.(actions.DriveAction).SearchFoldersWithName(context.Args()[0])
 					},
 				},
 			},
