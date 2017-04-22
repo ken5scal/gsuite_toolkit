@@ -3,7 +3,6 @@ package services
 import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
-	"fmt"
 )
 
 // GroupService provides
@@ -31,21 +30,18 @@ func (s *GroupService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
-// RepeatCallerUntilNoPageToken repeats service call until next token gets empty
-func (s *GroupService) RepeatCallerUntilNoPageToken() (error) {
-	return nil
-}
-
 func (s *GroupService) RetrieveAllGroups() ([]*admin.Group, error) {
-	s.GroupsListCall = s.GroupsService.List()
-
-	//if e := s.RepeatCallerUntilNoPageToken(); e != nil {
-	//	return nil, e
-	//}
-	groups, e := s.GroupsListCall.Customer("my_customer").Do()
-	fmt.Println()
-	if e != nil {
-		return nil, e
+	call := s.GroupsService.List().Customer("my_customer").MaxResults(3)
+	var groups []*admin.Group
+	for {
+		g, e := call.Do()
+		if e != nil {
+			return nil, e
+		}
+		groups = append(groups, g.Groups...)
+		if g.NextPageToken == "" {
+			return groups, nil
+		}
+		call.PageToken(g.NextPageToken)
 	}
-	return groups.Groups, nil
 }
