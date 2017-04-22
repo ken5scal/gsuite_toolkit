@@ -30,8 +30,22 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
-func (s *UserService) GetAllAdmin(domain string) (*admin.Users, error) {
+func (s *UserService) GetAllAdmin(domain string) (*admin.Users.Users, error) {
+	call := s.UsersService.List().Domain(domain).OrderBy("email").Query("isAdmin=true")
+	// ToDO: I want to make this common
+	var users []*admin.Users.Users
+	for {
+		if g, e := call.Do(); e != nil {
+			return nil, e
+		} else {
 
+			users = append(users, g.Users...)
+			if g.NextPageToken == "" {
+				return users, nil
+			}
+			call.PageToken(g.NextPageToken)
+		}
+	}
 }
 
 // GetEmployees retrieves employees from Gsuite organization.
