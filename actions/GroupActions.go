@@ -33,8 +33,8 @@ func (action GroupAction) GetGroup(email string) error {
 		fmt.Println(g.Email)
 		fmt.Println(g.Description)
 		fmt.Println(g.AdminCreated)
+		return nil
 	}
-	return nil
 }
 
 // RetrieveAllGroups fetched entire group in same domain
