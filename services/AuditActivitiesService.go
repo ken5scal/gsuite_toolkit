@@ -63,7 +63,7 @@ func (s *AuditService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
-// getSAMLlogin: This is just experimental so leave as it is.
+// getWhatever: This is just experimental so leave as it is.
 // Activities: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
 // Parameter: https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1
 // userKey: all or specific email
@@ -83,12 +83,26 @@ func (s *AuditService) getAllActivities() {
 	s.ActivitiesService.List("all", "admin")
 }
 
+type RequestAuditDuration int
+const (
+	This_Week RequestAuditDuration = iota
+	This_Month
+	Last_Month
+	Last_Three_Month
+	Half_Year // This is the maximum duration GSuite can pull off: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
+)
+
 // ListUserCreatedEvents
 // Weekly, Monthly...
-func (s *AuditService) ListUserCreatedEvents() ([]*admin.Activity, error) {
-	year, month, _ := time.Now().Date()
-	// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
-	startTime := strconv.Itoa(year) + "-" + month.String() + "-01T00:00:00.000Z"
+func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+	var startTime string // RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
+	switch d {
+	case This_Week:
+
+	case This_Month:
+		year, month, _ := time.Now().Date()
+		startTime = strconv.Itoa(year) + "-" + month.String() + "-01T00:00:00.000Z"
+	}
 
 	call := s.ActivitiesService.
 		List("all", "admin").
