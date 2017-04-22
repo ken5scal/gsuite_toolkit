@@ -89,9 +89,6 @@ func main() {
 						if context.NArg() == 1 {
 							email = context.Args()[0]
 						}
-						fmt.Println(tomlConf)
-						fmt.Println(tomlConf.Owner)
-						fmt.Println(email)
 						return a.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.Domain, email)
 					},
 				},
