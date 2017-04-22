@@ -3,6 +3,7 @@ package services
 import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
+	"fmt"
 )
 
 // GroupService provides
@@ -41,7 +42,8 @@ func (s *GroupService) RetrieveAllGroups() ([]*admin.Group, error) {
 	//if e := s.RepeatCallerUntilNoPageToken(); e != nil {
 	//	return nil, e
 	//}
-	groups, e := s.GroupsListCall.Do()
+	groups, e := s.GroupsListCall.Customer("my_customer").Do()
+	fmt.Println()
 	if e != nil {
 		return nil, e
 	}
