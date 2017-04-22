@@ -106,7 +106,7 @@ func main() {
 				{
 					Name: "list", Usage: "list existing files",
 					Action: func(context *cli.Context) error {
-						return a.(actions.DriveAction).SearchAllFolders()
+						return a.(*actions.DriveAction).SearchAllFolders()
 					},
 				},
 				{
@@ -115,7 +115,7 @@ func main() {
 						if context.NArg() != 1 {
 							return errors.New("Number of keyword must be exactly 1")
 						}
-						return a.(actions.DriveAction).SearchFoldersByName(context.Args()[0])
+						return a.(*actions.DriveAction).SearchFoldersByName(context.Args()[0])
 					},
 				},
 			},
@@ -148,23 +148,23 @@ func main() {
 					// TODO probably account command?
 					Name:  "non2sv", Usage: "get employees who have not enabled 2sv",
 					Action: func(context *cli.Context) error {
-						return a.(actions.LoginAction).GetNon2StepVerifiedUsers()
+						return a.(*actions.LoginAction).GetNon2StepVerifiedUsers()
 					},
 				},
 				{
 					Name:  "suspicious_login", Usage: "get employees who have not been office for 30 days, but accessing",
 					Action: func(c *cli.Context) error {
-						activities, err := a.(actions.LoginAction).GetAllLoginActivities(45)
+						activities, err := a.(*actions.LoginAction).GetAllLoginActivities(45)
 						if err != nil {
 							return err
 						}
-						return a.(actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
+						return a.(*actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
 					},
 				},
 				{
 					Name:  "rare-login", Usage: "get employees who have not logged in for a while",
 					Action: func(context *cli.Context) error {
-						return a.(actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.DomainName)
+						return a.(*actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.DomainName)
 					},
 				},
 
