@@ -3,6 +3,8 @@ package services
 import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
+	"github.com/asaskevich/govalidator"
+	"errors"
 )
 
 // GroupService provides
@@ -31,6 +33,11 @@ func (s *GroupService) SetClient(client *http.Client) (error) {
 }
 
 func (s *GroupService) RetrieveAllGroups(domain, email string) ([]*admin.Group, error) {
+
+	if !govalidator.IsEmail(email) {
+		return nil, errors.New("Wrong email format.")
+	}
+
 	call := s.GroupsService.List().
 		Domain(domain).
 		UserKey(email)

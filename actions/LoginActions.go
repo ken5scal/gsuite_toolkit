@@ -16,15 +16,15 @@ func InitLoginAction() *LoginAction {
 	return &LoginAction{}
 }
 
-func (a *LoginAction) SetService(s services.Service) error {
+func (action *LoginAction) SetService(s services.Service) error {
 	_, ok := s.(*services.ReportService)
 	_, ok2 := s.(*services.UserService)
 	if !(ok || ok2) {
 		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	} else if ok {
-		a.report = s.(*services.ReportService)
+		action.report = s.(*services.ReportService)
 	} else if ok2 {
-		a.user = s.(*services.UserService)
+		action.user = s.(*services.UserService)
 	}
 	return nil
 }

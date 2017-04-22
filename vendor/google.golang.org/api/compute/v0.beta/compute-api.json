@@ -1,11 +1,11 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"tbys6C40o18GZwyMen5GMkdK-3s/ZWzxFNONK91xZCTJWdl-jDEEjJE\"",
+ "etag": "\"YWOzh2SDasdU84ArJnpYek-OMdg/eZtKXOLicIBatNRbKvMBGga7L94\"",
  "discoveryVersion": "v1",
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20170124",
+ "revision": "20170329",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -310,7 +310,7 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of this access configuration."
+     "description": "The name of this access configuration. The default and recommended name is External NAT but you can use any arbitrary string you would like. For example, My external IP or Network Access."
     },
     "natIP": {
      "type": "string",
@@ -336,7 +336,7 @@
    "properties": {
     "address": {
      "type": "string",
-     "description": "The static external IP address represented by this resource. Only IPv4 is supported."
+     "description": "The static external IP address represented by this resource."
     },
     "creationTimestamp": {
      "type": "string",
@@ -350,6 +350,20 @@
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
      "format": "uint64"
+    },
+    "ipVersion": {
+     "type": "string",
+     "description": "The IP Version that will be used by this address. Valid options are IPV4 or IPV6. This can only be specified for a global address.",
+     "enum": [
+      "IPV4",
+      "IPV6",
+      "UNSPECIFIED_VERSION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "kind": {
      "type": "string",
@@ -539,6 +553,21 @@
     }
    }
   },
+  "AliasIpRange": {
+   "id": "AliasIpRange",
+   "type": "object",
+   "description": "An alias IP range attached to an instance's network interface.",
+   "properties": {
+    "ipCidrRange": {
+     "type": "string",
+     "description": "The IP CIDR range represented by this alias IP range. This IP CIDR range must belong to the specified subnetwork and cannot contain IP addresses reserved by system or used by other network interfaces. This range may be a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24) or a CIDR format string (e.g. 10.1.2.0/24)."
+    },
+    "subnetworkRangeName": {
+     "type": "string",
+     "description": "Optional subnetwork secondary range name specifying the secondary range from which to allocate the IP CIDR range for this alias IP range. If left unspecified, the primary range of the subnetwork will be used."
+    }
+   }
+  },
   "AttachedDisk": {
    "id": "AttachedDisk",
    "type": "object",
@@ -619,12 +648,7 @@
      "enumDescriptions": [
       "",
       ""
-     ],
-     "annotations": {
-      "required": [
-       "compute.instances.insert"
-      ]
-     }
+     ]
     }
    }
   },
@@ -671,7 +695,7 @@
   "AuditConfig": {
    "id": "AuditConfig",
    "type": "object",
-   "description": "Specifies the audit configuration for a service. It consists of which permission types are logged, and what identities, if any, are exempted from logging. An AuditConifg must have one or more AuditLogConfigs.",
+   "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConifg must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n{ \"audit_configs\": [ { \"service\": \"allServices\" \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:foo@gmail.com\" ] }, { \"log_type\": \"DATA_WRITE\", }, { \"log_type\": \"ADMIN_READ\", } ] }, { \"service\": \"fooservice@googleapis.com\" \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:bar@gmail.com\" ] } ] } ] }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.",
    "properties": {
     "auditLogConfigs": {
      "type": "array",
@@ -682,14 +706,14 @@
     },
     "exemptedMembers": {
      "type": "array",
-     "description": "Specifies the identities that are exempted from \"data access\" audit logging for the `service` specified above. Follows the same format of Binding.members. This field is deprecated in favor of per-permission-type exemptions.",
+     "description": "",
      "items": {
       "type": "string"
      }
     },
     "service": {
      "type": "string",
-     "description": "Specifies a service that will be enabled for audit logging. For example, `resourcemanager`, `storage`, `compute`. `allServices` is a special value that covers all services."
+     "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services."
     }
    }
   },
@@ -1302,7 +1326,7 @@
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP and SSL. The default is HTTP.\n\nFor internal load balancing, the possible values are TCP and UDP, and the default is TCP.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.\n\nFor internal load balancing, the possible values are TCP and UDP, and the default is TCP.",
      "enum": [
       "HTTP",
       "HTTPS",
@@ -1414,7 +1438,7 @@
   "BackendServiceIAP": {
    "id": "BackendServiceIAP",
    "type": "object",
-   "description": "Identity-Aware Proxy (Cloud Gatekeeper)",
+   "description": "Identity-Aware Proxy",
    "properties": {
     "enabled": {
      "type": "boolean"
@@ -1453,7 +1477,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] A token used to continue a truncated list request."
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     },
     "selfLink": {
      "type": "string",
@@ -1607,6 +1631,237 @@
     }
    }
   },
+  "Commitment": {
+   "id": "Commitment",
+   "type": "object",
+   "description": "A usage-commitment with a start / end time. Users create commitments for particular resources (e.g. memory). Actual usage is first deducted from available commitments made prior, perhaps at a reduced price (as laid out in the commitment).",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "endTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Commitment end time in RFC3339 text format."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#commitment for commitments.",
+     "default": "compute#commitment"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "plan": {
+     "type": "string",
+     "description": "The plan for this commitment, which determines duration and discount rate. The currently supported plans are TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).",
+     "enum": [
+      "INVALID",
+      "THIRTY_SIX_MONTH",
+      "TWELVE_MONTH"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where this commitment may be used."
+    },
+    "resources": {
+     "type": "array",
+     "description": "List of commitment amounts for particular resources. Note that VCPU and MEMORY resource commitments must occur together.",
+     "items": {
+      "$ref": "ResourceCommitment"
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "startTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Commitment start time in RFC3339 text format."
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] Status of the commitment with regards to eventual expiration (each commitment has an end-date defined). One of the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.",
+     "enum": [
+      "ACTIVE",
+      "CREATING",
+      "EXPIRED",
+      "NOT_YET_ACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "statusMessage": {
+     "type": "string",
+     "description": "[Output Only] An optional, human-readable explanation of the status."
+    }
+   }
+  },
+  "CommitmentAggregatedList": {
+   "id": "CommitmentAggregatedList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "object",
+     "description": "Commitments by scope.",
+     "additionalProperties": {
+      "$ref": "CommitmentsScopedList",
+      "description": "[Output Only] Name of the scope containing this set of commitments."
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#commitmentAggregatedList for aggregated lists of commitments.",
+     "default": "compute#commitmentAggregatedList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "CommitmentList": {
+   "id": "CommitmentList",
+   "type": "object",
+   "description": "Contains a list of Commitment resources.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of Commitment resources.",
+     "items": {
+      "$ref": "Commitment"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#commitmentList for lists of commitments.",
+     "default": "compute#commitmentList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "CommitmentsScopedList": {
+   "id": "CommitmentsScopedList",
+   "type": "object",
+   "properties": {
+    "commitments": {
+     "type": "array",
+     "description": "[Output Only] List of commitments contained in this scope.",
+     "items": {
+      "$ref": "Commitment"
+     }
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning which replaces the list of commitments when the list is empty.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "Condition": {
    "id": "Condition",
    "type": "object",
@@ -1616,12 +1871,16 @@
      "type": "string",
      "description": "Trusted attributes supplied by the IAM system.",
      "enum": [
+      "APPROVER",
       "ATTRIBUTION",
       "AUTHORITY",
+      "JUSTIFICATION_TYPE",
       "NO_ATTR",
       "SECURITY_REALM"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -1799,7 +2058,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this disk. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels to apply to this disk. These can be later modified by the setLabels method.",
      "additionalProperties": {
       "type": "string"
      }
@@ -1934,7 +2193,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results. Acceptable values are 0 to 500, inclusive. (Default: 500)"
     },
     "selfLink": {
      "type": "string",
@@ -1965,7 +2224,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] A token used to continue a truncated list request."
+     "description": "This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     },
     "selfLink": {
      "type": "string",
@@ -2304,9 +2563,48 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "denied": {
+     "type": "array",
+     "description": "The list of DENY rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection.",
+     "items": {
+      "type": "object",
+      "properties": {
+       "IPProtocol": {
+        "type": "string",
+        "description": "The IP protocol to which this rule applies. The protocol type is required when creating a firewall rule. This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol number."
+       },
+       "ports": {
+        "type": "array",
+        "description": "An optional list of ports to which this rule applies. This field is only applicable for UDP or TCP protocol. Each entry must be either an integer or a range. If not specified, this rule applies to connections through any port.\n\nExample inputs include: [\"22\"], [\"80\",\"443\"], and [\"12345-12349\"].",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "destinationRanges": {
+     "type": "array",
+     "description": "If destination ranges are specified, the firewall will apply only to traffic that has destination IP address in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "direction": {
+     "type": "string",
+     "description": "Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.",
+     "enum": [
+      "EGRESS",
+      "INGRESS"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "id": {
      "type": "string",
@@ -2332,6 +2630,11 @@
     "network": {
      "type": "string",
      "description": "URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used:\nglobal/networks/default\nIf you choose to specify this property, you can specify the network as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/myproject/global/networks/my-network \n- projects/myproject/global/networks/my-network \n- global/networks/default"
+    },
+    "priority": {
+     "type": "integer",
+     "description": "Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority.",
+     "format": "int32"
     },
     "selfLink": {
      "type": "string",
@@ -2437,6 +2740,20 @@
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
      "format": "uint64"
     },
+    "ipVersion": {
+     "type": "string",
+     "description": "The IP Version that will be used by this forwarding rule. Valid options are IPV4 or IPV6. This can only be specified for a global forwarding rule.",
+     "enum": [
+      "IPV4",
+      "IPV6",
+      "UNSPECIFIED_VERSION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#forwardingRule for Forwarding Rule resources.",
@@ -2471,7 +2788,7 @@
     },
     "ports": {
      "type": "array",
-     "description": "This field is not used for external load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule. If the port list is not provided then all ports are allowed to pass through.\n\nYou may specify a maximum of up to 5 ports.",
+     "description": "This field is not used for external load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
      "items": {
       "type": "string"
      }
@@ -2490,7 +2807,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global TargetHttpProxy or TargetHttpsProxy resource. The forwarded traffic must be of a type appropriate to the target object. For example, TargetHttpProxy requires HTTP traffic, and TargetHttpsProxy requires HTTPS traffic.\n\nThis field is not used for internal load balancing."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object.\n\nThis field is not used for internal load balancing."
     }
    }
   },
@@ -2689,7 +3006,7 @@
     },
     "port": {
      "type": "integer",
-     "description": "The TCP port number for the health check request. The default value is 80.",
+     "description": "The TCP port number for the health check request. The default value is 80. Valid values are 1 through 65535.",
      "format": "int32"
     },
     "portName": {
@@ -2724,7 +3041,7 @@
     },
     "port": {
      "type": "integer",
-     "description": "The TCP port number for the health check request. The default value is 443.",
+     "description": "The TCP port number for the health check request. The default value is 443. Valid values are 1 through 65535.",
      "format": "int32"
     },
     "portName": {
@@ -3187,7 +3504,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this image. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels to apply to this image. These can be later modified by the setLabels method.",
      "additionalProperties": {
       "type": "string"
      }
@@ -3343,6 +3660,7 @@
     },
     "guestAccelerators": {
      "type": "array",
+     "description": "List of the type and count of accelerator cards attached to the instance.",
      "items": {
       "$ref": "AcceleratorConfig"
      }
@@ -3364,7 +3682,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this instance. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels to apply to this instance. These can be later modified by the setLabels method.",
      "additionalProperties": {
       "type": "string"
      }
@@ -3384,7 +3702,13 @@
     },
     "name": {
      "type": "string",
-     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
+     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.instances.insert"
+      ]
+     }
     },
     "networkInterfaces": {
      "type": "array",
@@ -3395,7 +3719,7 @@
     },
     "scheduling": {
      "$ref": "Scheduling",
-     "description": "Scheduling options for this instance."
+     "description": "Sets the scheduling options for this instance."
     },
     "selfLink": {
      "type": "string",
@@ -3403,7 +3727,7 @@
     },
     "serviceAccounts": {
      "type": "array",
-     "description": "A list of service accounts, with their specified scopes, authorized for this instance. Service accounts generate access tokens that can be accessed through the metadata server and used to authenticate applications on the instance. See Service Accounts for more information.",
+     "description": "A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported.\n\nService accounts generate access tokens that can be accessed through the metadata server and used to authenticate applications on the instance. See Service Accounts for more information.",
      "items": {
       "$ref": "ServiceAccount"
      }
@@ -3890,6 +4214,10 @@
      "items": {
       "$ref": "ManagedInstance"
      }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     }
    }
   },
@@ -4282,9 +4610,16 @@
       "$ref": "AttachedDisk"
      }
     },
+    "guestAccelerators": {
+     "type": "array",
+     "description": "A list of guest accelerator cards' type and count to use for instances created from the instance template.",
+     "items": {
+      "$ref": "AcceleratorConfig"
+     }
+    },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to instances that are created from this template. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels to apply to instances that are created from this template.",
      "additionalProperties": {
       "type": "string"
      }
@@ -4544,7 +4879,6 @@
     },
     "labels": {
      "type": "object",
-     "description": "A list of labels to apply for this instance. Changing instance labels will also change the instance tags.\n\nEach label key & value must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. For example, \"webserver-frontend\": \"images\". A label value can also be empty (e.g. \"my-label\": \"\").",
      "additionalProperties": {
       "type": "string"
      }
@@ -4557,6 +4891,7 @@
    "properties": {
     "guestAccelerators": {
      "type": "array",
+     "description": "List of the type and count of accelerator cards attached to the instance.",
      "items": {
       "$ref": "AcceleratorConfig"
      }
@@ -4933,6 +5268,10 @@
     "lastAttempt": {
      "$ref": "ManagedInstanceLastAttempt",
      "description": "[Output Only] Information about the last attempt to create or delete the instance."
+    },
+    "version": {
+     "$ref": "ManagedInstanceVersion",
+     "description": "[Output Only] Intended version of this instance."
     }
    }
   },
@@ -4966,6 +5305,20 @@
        }
       }
      }
+    }
+   }
+  },
+  "ManagedInstanceVersion": {
+   "id": "ManagedInstanceVersion",
+   "type": "object",
+   "properties": {
+    "instanceTemplate": {
+     "type": "string",
+     "description": "[Output Only] The intended template of the instance. This field is empty when current_action is one of { DELETING, ABANDONING }."
+    },
+    "name": {
+     "type": "string",
+     "description": "[Output Only] Name of the version."
     }
    }
   },
@@ -5111,6 +5464,13 @@
       "$ref": "AccessConfig"
      }
     },
+    "aliasIpRanges": {
+     "type": "array",
+     "description": "An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks.",
+     "items": {
+      "$ref": "AliasIpRange"
+     }
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#networkInterface for network interfaces.",
@@ -5200,6 +5560,34 @@
     }
    }
   },
+  "NetworksAddPeeringRequest": {
+   "id": "NetworksAddPeeringRequest",
+   "type": "object",
+   "properties": {
+    "autoCreateRoutes": {
+     "type": "boolean",
+     "description": "Whether Google Compute Engine manages the routes automatically."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the peering, which should conform to RFC1035."
+    },
+    "peerNetwork": {
+     "type": "string",
+     "description": "URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network."
+    }
+   }
+  },
+  "NetworksRemovePeeringRequest": {
+   "id": "NetworksRemovePeeringRequest",
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name of the peering, which should conform to RFC1035."
+    }
+   }
+  },
   "Operation": {
    "id": "Operation",
    "type": "object",
@@ -5211,7 +5599,7 @@
     },
     "creationTimestamp": {
      "type": "string",
-     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+     "description": "[Deprecated] This field is deprecated."
     },
     "description": {
      "type": "string",
@@ -5706,6 +6094,48 @@
     }
    }
   },
+  "ProjectsDisableXpnResourceRequest": {
+   "id": "ProjectsDisableXpnResourceRequest",
+   "type": "object",
+   "properties": {
+    "xpnResource": {
+     "$ref": "XpnResourceId",
+     "description": "XPN resource ID."
+    }
+   }
+  },
+  "ProjectsEnableXpnResourceRequest": {
+   "id": "ProjectsEnableXpnResourceRequest",
+   "type": "object",
+   "properties": {
+    "xpnResource": {
+     "$ref": "XpnResourceId",
+     "description": "XPN resource ID."
+    }
+   }
+  },
+  "ProjectsGetXpnResources": {
+   "id": "ProjectsGetXpnResources",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#projectsGetXpnResources for lists of XPN resources.",
+     "default": "compute#projectsGetXpnResources"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "resources": {
+     "type": "array",
+     "description": "XPN resources attached to this project as their XPN host.",
+     "items": {
+      "$ref": "XpnResourceId"
+     }
+    }
+   }
+  },
   "ProjectsListXpnHostsRequest": {
    "id": "ProjectsListXpnHostsRequest",
    "type": "object",
@@ -5733,12 +6163,12 @@
       "AUTOSCALERS",
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
+      "COMMITMENTS",
       "CPUS",
       "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
       "FIREWALLS",
       "FORWARDING_RULES",
-      "GPUS",
       "HEALTH_CHECKS",
       "IMAGES",
       "INSTANCES",
@@ -5748,6 +6178,7 @@
       "IN_USE_ADDRESSES",
       "LOCAL_SSD_TOTAL_GB",
       "NETWORKS",
+      "NVIDIA_K80_GPUS",
       "PREEMPTIBLE_CPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
@@ -5768,6 +6199,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -5975,7 +6407,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The names of one or more instances to abandon.",
+     "description": "The URLs of one or more instances to abandon. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -5988,7 +6420,7 @@
    "properties": {
     "instances": {
      "type": "array",
-     "description": "The names of one or more instances to delete.",
+     "description": "The URLs of one or more instances to delete. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -6005,6 +6437,10 @@
      "items": {
       "$ref": "ManagedInstance"
      }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     }
    }
   },
@@ -6160,6 +6596,32 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "ResourceCommitment": {
+   "id": "ResourceCommitment",
+   "type": "object",
+   "description": "Commitment for a particular resource (a Commitment is composed of one or more of these).",
+   "properties": {
+    "amount": {
+     "type": "string",
+     "description": "The amount of the resource purchased (in a type-dependent unit, such as bytes).",
+     "format": "int64"
+    },
+    "type": {
+     "type": "string",
+     "description": "Type of resource for which this commitment applies.",
+     "enum": [
+      "MEMORY",
+      "UNSPECIFIED",
+      "VCPU"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -6535,7 +6997,7 @@
     },
     "linkedVpnTunnel": {
      "type": "string",
-     "description": "URI of linked VPN tunnel. It must be in the same region as the router. Each interface can have at most one linked resource."
+     "description": "URI of the linked VPN tunnel. It must be in the same region as the router. Each interface can have at most one linked resource and it could either be a VPN Tunnel or an interconnect attachment."
     },
     "name": {
      "type": "string",
@@ -6582,6 +7044,13 @@
     "bestRoutes": {
      "type": "array",
      "description": "Best routes for this router's network.",
+     "items": {
+      "$ref": "Route"
+     }
+    },
+    "bestRoutesForRouter": {
+     "type": "array",
+     "description": "Best routes learned by this router.",
      "items": {
       "$ref": "Route"
      }
@@ -6836,7 +7305,7 @@
    "properties": {
     "port": {
      "type": "integer",
-     "description": "The TCP port number for the health check request. The default value is 443.",
+     "description": "The TCP port number for the health check request. The default value is 443. Valid values are 1 through 65535.",
      "format": "int32"
     },
     "portName": {
@@ -6872,7 +7341,7 @@
    "properties": {
     "automaticRestart": {
      "type": "boolean",
-     "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted."
+     "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
     },
     "onHostMaintenance": {
      "type": "string",
@@ -6888,7 +7357,7 @@
     },
     "preemptible": {
      "type": "boolean",
-     "description": "Whether the instance is preemptible."
+     "description": "Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created."
     }
    }
   },
@@ -6917,7 +7386,7 @@
     },
     "start": {
      "type": "string",
-     "description": "[Output Only] The starting byte position of the output that was returned. This should match the start parameter sent with the request. If the serial console output exceeds the size of the buffer, older output will be overwritten by newer content and the start values will be mismatched.",
+     "description": "The starting byte position of the output that was returned. This should match the start parameter sent with the request. If the serial console output exceeds the size of the buffer, older output will be overwritten by newer content and the start values will be mismatched.",
      "format": "int64"
     }
    }
@@ -6975,7 +7444,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to this snapshot. These can be later modified by the setLabels method. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "description": "Labels to apply to this snapshot. These can be later modified by the setLabels method. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -7193,9 +7662,20 @@
      "type": "string",
      "description": "The URL of the network to which this subnetwork belongs, provided by the client when initially creating the subnetwork. Only networks that are in the distributed mode can have subnetworks."
     },
+    "privateIpGoogleAccess": {
+     "type": "boolean",
+     "description": "Whether the VMs in this subnet can access Google services without assigned external IP addresses."
+    },
     "region": {
      "type": "string",
      "description": "URL of the region where the Subnetwork resides."
+    },
+    "secondaryIpRanges": {
+     "type": "array",
+     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges.",
+     "items": {
+      "$ref": "SubnetworkSecondaryRange"
+     }
     },
     "selfLink": {
      "type": "string",
@@ -7262,6 +7742,21 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "SubnetworkSecondaryRange": {
+   "id": "SubnetworkSecondaryRange",
+   "type": "object",
+   "description": "Represents a secondary IP range of a subnetwork.",
+   "properties": {
+    "ipCidrRange": {
+     "type": "string",
+     "description": "The range of IP addresses belonging to this subnetwork secondary range. Provide this property when you create the subnetwork. Ranges must be unique and non-overlapping with all primary and secondary IP ranges within a network. Only IPv4 is supported."
+    },
+    "rangeName": {
+     "type": "string",
+     "description": "The name associated with this subnetwork secondary range, used when adding an alias IP range to a VM instance. The name must be 1-63 characters long, and comply with RFC1035. The name must be unique within the subnetwork."
     }
    }
   },
@@ -7357,13 +7852,22 @@
     }
    }
   },
+  "SubnetworksSetPrivateIpGoogleAccessRequest": {
+   "id": "SubnetworksSetPrivateIpGoogleAccessRequest",
+   "type": "object",
+   "properties": {
+    "privateIpGoogleAccess": {
+     "type": "boolean"
+    }
+   }
+  },
   "TCPHealthCheck": {
    "id": "TCPHealthCheck",
    "type": "object",
    "properties": {
     "port": {
      "type": "integer",
-     "description": "The TCP port number for the health check request. The default value is 80.",
+     "description": "The TCP port number for the health check request. The default value is 80. Valid values are 1 through 65535.",
      "format": "int32"
     },
     "portName": {
@@ -7768,7 +8272,7 @@
   "TargetPool": {
    "id": "TargetPool",
    "type": "object",
-   "description": "A TargetPool resource. This resource defines a pool of instances, associated HttpHealthCheck resources, and the fallback target pool.",
+   "description": "A TargetPool resource. This resource defines a pool of instances, an associated HttpHealthCheck resource, and the fallback target pool.",
    "properties": {
     "backupPool": {
      "type": "string",
@@ -7789,7 +8293,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "A list of URLs to the HttpHealthCheck resource. A member instance in this pool is considered healthy if and only if all specified health checks pass. An empty list means all member instances will be considered healthy at all times.",
+     "description": "The URL of the HttpHealthCheck resource. A member instance in this pool is considered healthy if and only if the health checks pass. An empty list means all member instances will be considered healthy at all times. Only HttpHealthChecks are supported. Only one health check may be specified.",
      "items": {
       "type": "string"
      }
@@ -7929,7 +8433,7 @@
    "properties": {
     "healthChecks": {
      "type": "array",
-     "description": "A list of HttpHealthCheck resources to add to the target pool.",
+     "description": "The HttpHealthCheck to add to the target pool.",
      "items": {
       "$ref": "HealthCheckReference"
      }
@@ -8184,6 +8688,115 @@
      "type": "string",
      "description": "Type of resource.",
      "default": "compute#targetSslProxyList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "TargetTcpProxiesSetBackendServiceRequest": {
+   "id": "TargetTcpProxiesSetBackendServiceRequest",
+   "type": "object",
+   "properties": {
+    "service": {
+     "type": "string",
+     "description": "The URL of the new BackendService resource for the targetTcpProxy."
+    }
+   }
+  },
+  "TargetTcpProxiesSetProxyHeaderRequest": {
+   "id": "TargetTcpProxiesSetProxyHeaderRequest",
+   "type": "object",
+   "properties": {
+    "proxyHeader": {
+     "type": "string",
+     "description": "The new type of proxy header to append before sending data to the backend. NONE or PROXY_V1 are allowed.",
+     "enum": [
+      "NONE",
+      "PROXY_V1"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "TargetTcpProxy": {
+   "id": "TargetTcpProxy",
+   "type": "object",
+   "description": "A TargetTcpProxy resource. This resource defines a TCP proxy.",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#targetTcpProxy for target TCP proxies.",
+     "default": "compute#targetTcpProxy"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "proxyHeader": {
+     "type": "string",
+     "description": "Specifies the type of proxy header to append before sending data to the backend, either NONE or PROXY_V1. The default is NONE.",
+     "enum": [
+      "NONE",
+      "PROXY_V1"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "service": {
+     "type": "string",
+     "description": "URL to the BackendService resource."
+    }
+   }
+  },
+  "TargetTcpProxyList": {
+   "id": "TargetTcpProxyList",
+   "type": "object",
+   "description": "Contains a list of TargetTcpProxy resources.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of TargetTcpProxy resources.",
+     "items": {
+      "$ref": "TargetTcpProxy"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "compute#targetTcpProxyList"
     },
     "nextPageToken": {
      "type": "string",
@@ -8471,7 +9084,7 @@
    "properties": {
     "port": {
      "type": "integer",
-     "description": "The UDP port number for the health check request.",
+     "description": "The UDP port number for the health check request. Valid values are 1 through 65535.",
      "format": "int32"
     },
     "portName": {
@@ -8972,6 +9585,29 @@
     }
    }
   },
+  "XpnResourceId": {
+   "id": "XpnResourceId",
+   "type": "object",
+   "description": "XpnResourceId",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "The ID of the XPN resource. In the case of projects, this field matches the project's name, not the canonical ID."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of the XPN resource.",
+     "enum": [
+      "PROJECT",
+      "XPN_RESOURCE_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "Zone": {
    "id": "Zone",
    "type": "object",
@@ -9091,7 +9727,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9182,7 +9818,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9243,7 +9879,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9411,7 +10047,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9517,7 +10153,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9685,7 +10321,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9737,8 +10373,7 @@
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler to update.",
-       "required": true,
+       "description": "Name of the autoscaler to patch.",
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
       },
@@ -9759,8 +10394,7 @@
      },
      "parameterOrder": [
       "project",
-      "zone",
-      "autoscaler"
+      "zone"
      ],
      "request": {
       "$ref": "Autoscaler"
@@ -9770,7 +10404,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -9972,7 +10607,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10016,7 +10651,7 @@
      "parameters": {
       "backendBucket": {
        "type": "string",
-       "description": "Name of the BackendBucket resource to update.",
+       "description": "Name of the BackendBucket resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -10041,7 +10676,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "update": {
@@ -10097,7 +10733,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10277,7 +10913,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10317,11 +10953,11 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
+     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
      "parameters": {
       "backendService": {
        "type": "string",
-       "description": "Name of the BackendService resource to update.",
+       "description": "Name of the BackendService resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -10346,7 +10982,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -10439,7 +11076,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10530,7 +11167,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10591,7 +11228,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10811,7 +11448,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11100,7 +11737,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11144,7 +11781,7 @@
      "parameters": {
       "firewall": {
        "type": "string",
-       "description": "Name of the firewall rule to update.",
+       "description": "Name of the firewall rule to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -11169,7 +11806,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -11213,7 +11851,7 @@
      "id": "compute.firewalls.update",
      "path": "{project}/global/firewalls/{firewall}",
      "httpMethod": "PUT",
-     "description": "Updates the specified firewall rule with the data included in the request.",
+     "description": "Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.",
      "parameters": {
       "firewall": {
        "type": "string",
@@ -11262,7 +11900,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11430,7 +12068,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11675,7 +12313,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11860,7 +12498,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11986,7 +12624,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12099,7 +12737,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12247,7 +12885,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12291,7 +12929,7 @@
      "parameters": {
       "healthCheck": {
        "type": "string",
-       "description": "Name of the HealthCheck resource to update.",
+       "description": "Name of the HealthCheck resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -12316,7 +12954,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -12504,7 +13143,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12548,7 +13187,7 @@
      "parameters": {
       "httpHealthCheck": {
        "type": "string",
-       "description": "Name of the HttpHealthCheck resource to update.",
+       "description": "Name of the HttpHealthCheck resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -12573,7 +13212,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -12761,7 +13401,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12805,7 +13445,7 @@
      "parameters": {
       "httpsHealthCheck": {
        "type": "string",
-       "description": "Name of the HttpsHealthCheck resource to update.",
+       "description": "Name of the HttpsHealthCheck resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -12830,7 +13470,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -13091,7 +13732,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13208,7 +13849,7 @@
      "id": "compute.instanceGroupManagers.abandonInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/abandonInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.",
+     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -13259,7 +13900,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13338,7 +13979,7 @@
      "id": "compute.instanceGroupManagers.deleteInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.",
+     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -13420,7 +14061,7 @@
      "id": "compute.instanceGroupManagers.insert",
      "path": "{project}/zones/{zone}/instanceGroupManagers",
      "httpMethod": "POST",
-     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.",
+     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA managed instance group can have up to 1000 VM instances per group.",
      "parameters": {
       "project": {
        "type": "string",
@@ -13464,7 +14105,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13570,7 +14211,7 @@
      "id": "compute.instanceGroupManagers.patch",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "PATCH",
-     "description": "Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports patch semantics.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -13605,14 +14246,15 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "recreateInstances": {
      "id": "compute.instanceGroupManagers.recreateInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.",
+     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -13914,7 +14556,7 @@
      "id": "compute.instanceGroupManagers.update",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "PUT",
-     "description": "Updates a managed instance group using the information that you specify in the request. The field statefulPolicy is updated using PATCH semantics. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -14011,7 +14653,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14174,7 +14816,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14236,7 +14878,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14524,7 +15166,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14665,7 +15307,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14962,7 +15604,7 @@
       },
       "start": {
        "type": "string",
-       "description": "For the initial request, leave this field unspecified. For subsequent calls, this field should be set to the next value that was returned in the previous call.",
+       "description": "Returns output starting from a specific byte position. Use this to page through output when the output is too large to return in a single request. For the initial request, leave this field unspecified. For subsequent calls, this field should be set to the next value returned in the previous call.",
        "format": "int64",
        "location": "query"
       },
@@ -15037,7 +15679,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15085,7 +15727,7 @@
      "id": "compute.instances.reset",
      "path": "{project}/zones/{zone}/instances/{instance}/reset",
      "httpMethod": "POST",
-     "description": "Performs a hard reset on the instance.",
+     "description": "Performs a reset on the instance. For more information, see Resetting an instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -15402,7 +16044,7 @@
      "id": "compute.instances.setServiceAccount",
      "path": "{project}/zones/{zone}/instances/{instance}/setServiceAccount",
      "httpMethod": "POST",
-     "description": "Sets the service account on the instance.",
+     "description": "Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -15712,7 +16354,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15803,7 +16445,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15851,6 +16493,42 @@
   },
   "networks": {
    "methods": {
+    "addPeering": {
+     "id": "compute.networks.addPeering",
+     "path": "{project}/global/networks/{network}/addPeering",
+     "httpMethod": "POST",
+     "description": "Adds a peering to the specified network.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network resource to add peering to.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "request": {
+      "$ref": "NetworksAddPeeringRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "delete": {
      "id": "compute.networks.delete",
      "path": "{project}/global/networks/{network}",
@@ -15959,7 +16637,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15993,6 +16671,42 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "removePeering": {
+     "id": "compute.networks.removePeering",
+     "path": "{project}/global/networks/{network}/removePeering",
+     "httpMethod": "POST",
+     "description": "Removes a peering from the specified network.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network resource to remove peering from.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "request": {
+      "$ref": "NetworksRemovePeeringRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "switchToCustomMode": {
@@ -16069,6 +16783,112 @@
   },
   "projects": {
    "methods": {
+    "disableXpnHost": {
+     "id": "compute.projects.disableXpnHost",
+     "path": "{project}/disableXpnHost",
+     "httpMethod": "POST",
+     "description": "Disable this project as an XPN host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "disableXpnResource": {
+     "id": "compute.projects.disableXpnResource",
+     "path": "{project}/disableXpnResource",
+     "httpMethod": "POST",
+     "description": "Disable an XPN resource associated with this host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsDisableXpnResourceRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "enableXpnHost": {
+     "id": "compute.projects.enableXpnHost",
+     "path": "{project}/enableXpnHost",
+     "httpMethod": "POST",
+     "description": "Enable this project as an XPN host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "enableXpnResource": {
+     "id": "compute.projects.enableXpnResource",
+     "path": "{project}/enableXpnResource",
+     "httpMethod": "POST",
+     "description": "Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsEnableXpnResourceRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "get": {
      "id": "compute.projects.get",
      "path": "{project}",
@@ -16114,6 +16934,51 @@
      ],
      "response": {
       "$ref": "Project"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getXpnResources": {
+     "id": "compute.projects.getXpnResources",
+     "path": "{project}/getXpnResources",
+     "httpMethod": "GET",
+     "description": "Get XPN resources associated with this host project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "order_by": {
+       "type": "string",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "ProjectsGetXpnResources"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -16420,7 +17285,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16472,8 +17337,7 @@
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler to update.",
-       "required": true,
+       "description": "Name of the autoscaler to patch.",
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
       },
@@ -16494,8 +17358,7 @@
      },
      "parameterOrder": [
       "project",
-      "region",
-      "autoscaler"
+      "region"
      ],
      "request": {
       "$ref": "Autoscaler"
@@ -16505,7 +17368,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -16775,7 +17639,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16827,7 +17691,7 @@
      "parameters": {
       "backendService": {
        "type": "string",
-       "description": "Name of the BackendService resource to update.",
+       "description": "Name of the BackendService resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -16860,7 +17724,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -16954,13 +17819,201 @@
     }
    }
   },
+  "regionCommitments": {
+   "methods": {
+    "aggregatedList": {
+     "id": "compute.regionCommitments.aggregatedList",
+     "path": "{project}/aggregated/commitments",
+     "httpMethod": "GET",
+     "description": "Retrieves an aggregated list of commitments.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "CommitmentAggregatedList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "get": {
+     "id": "compute.regionCommitments.get",
+     "path": "{project}/regions/{region}/commitments/{commitment}",
+     "httpMethod": "GET",
+     "description": "Returns the specified commitment resource. Get a list of available commitments by making a list() request.",
+     "parameters": {
+      "commitment": {
+       "type": "string",
+       "description": "Name of the commitment to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "commitment"
+     ],
+     "response": {
+      "$ref": "Commitment"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.regionCommitments.insert",
+     "path": "{project}/regions/{region}/commitments",
+     "httpMethod": "POST",
+     "description": "Creates an commitment in the specified project using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "Commitment"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.regionCommitments.list",
+     "path": "{project}/regions/{region}/commitments",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of commitments contained within the specified region.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "response": {
+      "$ref": "CommitmentList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "regionInstanceGroupManagers": {
    "methods": {
     "abandonInstances": {
      "id": "compute.regionInstanceGroupManagers.abandonInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.",
+     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -17041,7 +18094,7 @@
      "id": "compute.regionInstanceGroupManagers.deleteInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.",
+     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -17123,7 +18176,7 @@
      "id": "compute.regionInstanceGroupManagers.insert",
      "path": "{project}/regions/{region}/instanceGroupManagers",
      "httpMethod": "POST",
-     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.",
+     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA regional managed instance group can contain up to 2000 instances.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17167,7 +18220,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17273,7 +18326,7 @@
      "id": "compute.regionInstanceGroupManagers.patch",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "PATCH",
-     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -17308,14 +18361,15 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "recreateInstances": {
      "id": "compute.regionInstanceGroupManagers.recreateInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.",
+     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -17671,7 +18725,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17733,7 +18787,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17964,7 +19018,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18059,7 +19113,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18112,7 +19166,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18322,7 +19376,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18370,7 +19424,7 @@
      "id": "compute.routers.patch",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified Router resource with the data included in the request. This method supports patch semantics.",
+     "description": "Patches the specified Router resource with the data included in the request. This method supports patch semantics.",
      "parameters": {
       "project": {
        "type": "string",
@@ -18388,7 +19442,7 @@
       },
       "router": {
        "type": "string",
-       "description": "Name of the Router resource to update.",
+       "description": "Name of the Router resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -18407,7 +19461,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "preview": {
@@ -18656,7 +19711,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18813,7 +19868,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19034,7 +20089,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19124,7 +20179,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19378,7 +20433,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19463,8 +20518,51 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setPrivateIpGoogleAccess": {
+     "id": "compute.subnetworks.setPrivateIpGoogleAccess",
+     "path": "{project}/regions/{region}/subnetworks/{subnetwork}/setPrivateIpGoogleAccess",
+     "httpMethod": "POST",
+     "description": "Set whether VMs in this subnet can access Google services without assigning external IP addresses through Cloudpath.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "subnetwork": {
+       "type": "string",
+       "description": "Name of the Subnetwork resource.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "subnetwork"
+     ],
+     "request": {
+      "$ref": "SubnetworksSetPrivateIpGoogleAccessRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "testIamPermissions": {
@@ -19624,7 +20722,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19845,7 +20943,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -20007,7 +21105,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -20175,7 +21273,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -20369,7 +21467,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -20582,7 +21680,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -20921,7 +22019,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -21104,6 +22202,226 @@
     }
    }
   },
+  "targetTcpProxies": {
+   "methods": {
+    "delete": {
+     "id": "compute.targetTcpProxies.delete",
+     "path": "{project}/global/targetTcpProxies/{targetTcpProxy}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified TargetTcpProxy resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "targetTcpProxy": {
+       "type": "string",
+       "description": "Name of the TargetTcpProxy resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetTcpProxy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.targetTcpProxies.get",
+     "path": "{project}/global/targetTcpProxies/{targetTcpProxy}",
+     "httpMethod": "GET",
+     "description": "Returns the specified TargetTcpProxy resource. Get a list of available target TCP proxies by making a list() request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "targetTcpProxy": {
+       "type": "string",
+       "description": "Name of the TargetTcpProxy resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetTcpProxy"
+     ],
+     "response": {
+      "$ref": "TargetTcpProxy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.targetTcpProxies.insert",
+     "path": "{project}/global/targetTcpProxies",
+     "httpMethod": "POST",
+     "description": "Creates a TargetTcpProxy resource in the specified project using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "TargetTcpProxy"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.targetTcpProxies.list",
+     "path": "{project}/global/targetTcpProxies",
+     "httpMethod": "GET",
+     "description": "Retrieves the list of TargetTcpProxy resources available to the specified project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "TargetTcpProxyList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setBackendService": {
+     "id": "compute.targetTcpProxies.setBackendService",
+     "path": "{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService",
+     "httpMethod": "POST",
+     "description": "Changes the BackendService for TargetTcpProxy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "targetTcpProxy": {
+       "type": "string",
+       "description": "Name of the TargetTcpProxy resource whose BackendService resource is to be set.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetTcpProxy"
+     ],
+     "request": {
+      "$ref": "TargetTcpProxiesSetBackendServiceRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setProxyHeader": {
+     "id": "compute.targetTcpProxies.setProxyHeader",
+     "path": "{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader",
+     "httpMethod": "POST",
+     "description": "Changes the ProxyHeaderType for TargetTcpProxy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "targetTcpProxy": {
+       "type": "string",
+       "description": "Name of the TargetTcpProxy resource whose ProxyHeader is to be set.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetTcpProxy"
+     ],
+     "request": {
+      "$ref": "TargetTcpProxiesSetProxyHeaderRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    }
+   }
+  },
   "targetVpnGateways": {
    "methods": {
     "aggregatedList": {
@@ -21119,7 +22437,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -21287,7 +22605,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -21524,7 +22842,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -21564,7 +22882,7 @@
      "id": "compute.urlMaps.patch",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
+     "description": "Patches the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
      "parameters": {
       "project": {
        "type": "string",
@@ -21575,7 +22893,7 @@
       },
       "urlMap": {
        "type": "string",
-       "description": "Name of the UrlMap resource to update.",
+       "description": "Name of the UrlMap resource to patch.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -21593,7 +22911,8 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {
@@ -21722,7 +23041,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -21890,7 +23209,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -22076,7 +23395,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -22171,7 +23490,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
        "default": "500",
        "format": "uint32",
        "minimum": "0",

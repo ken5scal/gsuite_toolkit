@@ -1,6 +1,6 @@
 // Package toolresults provides access to the Cloud Tool Results API.
 //
-// See https://developers.google.com/cloud-test-lab/
+// See https://firebase.google.com/docs/test-lab/
 //
 // Usage example:
 //
@@ -61,10 +61,9 @@ func New(client *http.Client) (*Service, error) {
 }
 
 type Service struct {
-	client                    *http.Client
-	BasePath                  string // API endpoint base URL
-	UserAgent                 string // optional additional User-Agent fragment
-	GoogleClientHeaderElement string // client header fragment, for Google use only
+	client    *http.Client
+	BasePath  string // API endpoint base URL
+	UserAgent string // optional additional User-Agent fragment
 
 	Projects *ProjectsService
 }
@@ -74,10 +73,6 @@ func (s *Service) userAgent() string {
 		return googleapi.UserAgent
 	}
 	return googleapi.UserAgent + " " + s.UserAgent
-}
-
-func (s *Service) clientHeader() string {
-	return gensupport.GoogleClientHeader("20170210", s.GoogleClientHeaderElement)
 }
 
 func NewProjectsService(s *Service) *ProjectsService {
@@ -276,12 +271,15 @@ func (s *Any) MarshalJSON() ([]byte, error) {
 type BasicPerfSampleSeries struct {
 	// Possible values:
 	//   "cpu"
+	//   "graphics"
 	//   "memory"
 	//   "network"
 	//   "perfMetricTypeUnspecified"
 	PerfMetricType string `json:"perfMetricType,omitempty"`
 
 	// Possible values:
+	//   "bytesPerSecond"
+	//   "framesPerSecond"
 	//   "kibibyte"
 	//   "percent"
 	//   "perfUnitUnspecified"
@@ -291,9 +289,13 @@ type BasicPerfSampleSeries struct {
 	//   "cpuKernel"
 	//   "cpuTotal"
 	//   "cpuUser"
+	//   "graphicsFrameRate"
 	//   "memoryRssPrivate"
 	//   "memoryRssShared"
 	//   "memoryRssTotal"
+	//   "memoryTotal"
+	//   "networkReceived"
+	//   "networkSent"
 	//   "ntBytesReceived"
 	//   "ntBytesTransferred"
 	//   "sampleSeriesTypeUnspecified"
@@ -492,7 +494,9 @@ type Duration struct {
 	Nanos int64 `json:"nanos,omitempty"`
 
 	// Seconds: Signed seconds of the span of time. Must be from
-	// -315,576,000,000 to +315,576,000,000 inclusive.
+	// -315,576,000,000 to +315,576,000,000 inclusive. Note: these bounds
+	// are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365.25
+	// days/year * 10000 years
 	Seconds int64 `json:"seconds,omitempty,string"`
 
 	// ForceSendFields is a list of field names (e.g. "Nanos") to
@@ -1228,6 +1232,7 @@ type PerfMetricsSummary struct {
 	//
 	// Possible values:
 	//   "cpu"
+	//   "graphics"
 	//   "memory"
 	//   "network"
 	//   "perfMetricTypeUnspecified"
@@ -2545,7 +2550,6 @@ func (c *ProjectsGetSettingsCall) doRequest(alt string) (*http.Response, error) 
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -2698,7 +2702,6 @@ func (c *ProjectsInitializeSettingsCall) doRequest(alt string) (*http.Response, 
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	urls := googleapi.ResolveRelative(c.s.BasePath, "{projectId}:initializeSettings")
@@ -2842,7 +2845,6 @@ func (c *ProjectsHistoriesCreateCall) doRequest(alt string) (*http.Response, err
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.history)
 	if err != nil {
@@ -2998,7 +3000,6 @@ func (c *ProjectsHistoriesGetCall) doRequest(alt string) (*http.Response, error)
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3179,7 +3180,6 @@ func (c *ProjectsHistoriesListCall) doRequest(alt string) (*http.Response, error
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3365,7 +3365,6 @@ func (c *ProjectsHistoriesExecutionsCreateCall) doRequest(alt string) (*http.Res
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.execution)
 	if err != nil {
@@ -3531,7 +3530,6 @@ func (c *ProjectsHistoriesExecutionsGetCall) doRequest(alt string) (*http.Respon
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3714,7 +3712,6 @@ func (c *ProjectsHistoriesExecutionsListCall) doRequest(alt string) (*http.Respo
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3905,7 +3902,6 @@ func (c *ProjectsHistoriesExecutionsPatchCall) doRequest(alt string) (*http.Resp
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.execution)
 	if err != nil {
@@ -4083,7 +4079,6 @@ func (c *ProjectsHistoriesExecutionsStepsCreateCall) doRequest(alt string) (*htt
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.step)
 	if err != nil {
@@ -4259,7 +4254,6 @@ func (c *ProjectsHistoriesExecutionsStepsGetCall) doRequest(alt string) (*http.R
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -4430,7 +4424,6 @@ func (c *ProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryCall) doRequest(al
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -4525,7 +4518,10 @@ func (c *ProjectsHistoriesExecutionsStepsGetPerfMetricsSummaryCall) Do(opts ...g
 	//   "path": "{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/perfMetricsSummary",
 	//   "response": {
 	//     "$ref": "PerfMetricsSummary"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform"
+	//   ]
 	// }
 
 }
@@ -4622,7 +4618,6 @@ func (c *ProjectsHistoriesExecutionsStepsListCall) doRequest(alt string) (*http.
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -4825,7 +4820,6 @@ func (c *ProjectsHistoriesExecutionsStepsPatchCall) doRequest(alt string) (*http
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.step)
 	if err != nil {
@@ -5002,7 +4996,6 @@ func (c *ProjectsHistoriesExecutionsStepsPublishXunitXmlFilesCall) doRequest(alt
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.publishxunitxmlfilesrequest)
 	if err != nil {
@@ -5170,7 +5163,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfMetricsSummaryCreateCall) doRequest
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.perfmetricssummary)
 	if err != nil {
@@ -5338,7 +5330,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesCreateCall) doRequest(a
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.perfsampleseries)
 	if err != nil {
@@ -5516,7 +5507,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesGetCall) doRequest(alt 
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5663,6 +5653,7 @@ func (r *ProjectsHistoriesExecutionsStepsPerfSampleSeriesService) List(projectId
 //
 // Possible values:
 //   "cpu"
+//   "graphics"
 //   "memory"
 //   "network"
 //   "perfMetricTypeUnspecified"
@@ -5712,7 +5703,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesListCall) doRequest(alt
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5789,11 +5779,13 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesListCall) Do(opts ...go
 	//       "description": "Specify one or more PerfMetricType values such as CPU to filter the result",
 	//       "enum": [
 	//         "cpu",
+	//         "graphics",
 	//         "memory",
 	//         "network",
 	//         "perfMetricTypeUnspecified"
 	//       ],
 	//       "enumDescriptions": [
+	//         "",
 	//         "",
 	//         "",
 	//         "",
@@ -5900,7 +5892,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesBatchCreateCall)
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.batchcreateperfsamplesrequest)
 	if err != nil {
@@ -6108,7 +6099,6 @@ func (c *ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesListCall) doRequ
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -6339,7 +6329,6 @@ func (c *ProjectsHistoriesExecutionsStepsThumbnailsListCall) doRequest(alt strin
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}

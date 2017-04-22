@@ -83,10 +83,9 @@ func New(client *http.Client) (*Service, error) {
 }
 
 type Service struct {
-	client                    *http.Client
-	BasePath                  string // API endpoint base URL
-	UserAgent                 string // optional additional User-Agent fragment
-	GoogleClientHeaderElement string // client header fragment, for Google use only
+	client    *http.Client
+	BasePath  string // API endpoint base URL
+	UserAgent string // optional additional User-Agent fragment
 
 	Datasets *DatasetsService
 
@@ -104,10 +103,6 @@ func (s *Service) userAgent() string {
 		return googleapi.UserAgent
 	}
 	return googleapi.UserAgent + " " + s.UserAgent
-}
-
-func (s *Service) clientHeader() string {
-	return gensupport.GoogleClientHeader("20170210", s.GoogleClientHeaderElement)
 }
 
 func NewDatasetsService(s *Service) *DatasetsService {
@@ -442,19 +437,18 @@ type Dataset struct {
 	// Kind: [Output-only] The resource type.
 	Kind string `json:"kind,omitempty"`
 
-	// Labels: [Experimental] The labels associated with this dataset. You
-	// can use these to organize and group your datasets. You can set this
-	// property when inserting or updating a dataset. See Labeling Datasets
-	// for more information.
+	// Labels: The labels associated with this dataset. You can use these to
+	// organize and group your datasets. You can set this property when
+	// inserting or updating a dataset. See Labeling Datasets for more
+	// information.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// LastModifiedTime: [Output-only] The date when this dataset or any of
 	// its tables was last modified, in milliseconds since the epoch.
 	LastModifiedTime int64 `json:"lastModifiedTime,omitempty,string"`
 
-	// Location: [Experimental] The geographic location where the dataset
-	// should reside. Possible values include EU and US. The default value
-	// is US.
+	// Location: The geographic location where the dataset should reside.
+	// Possible values include EU and US. The default value is US.
 	Location string `json:"location,omitempty"`
 
 	// SelfLink: [Output-only] A URL that can be used to access the resource
@@ -606,8 +600,8 @@ type DatasetListDatasets struct {
 	// "bigquery#dataset".
 	Kind string `json:"kind,omitempty"`
 
-	// Labels: [Experimental] The labels associated with this dataset. You
-	// can use these to organize and group your datasets.
+	// Labels: The labels associated with this dataset. You can use these to
+	// organize and group your datasets.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "DatasetReference") to
@@ -838,8 +832,8 @@ func (s *ExplainQueryStep) MarshalJSON() ([]byte, error) {
 }
 
 type ExternalDataConfiguration struct {
-	// Autodetect: [Experimental] Try to detect schema and format options
-	// automatically. Any option specified explicitly will be honored.
+	// Autodetect: Try to detect schema and format options automatically.
+	// Any option specified explicitly will be honored.
 	Autodetect bool `json:"autodetect,omitempty"`
 
 	// BigtableOptions: [Optional] Additional options if sourceFormat is set
@@ -889,10 +883,8 @@ type ExternalDataConfiguration struct {
 	// "CSV". For Google sheets, specify "GOOGLE_SHEETS". For
 	// newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro
 	// files, specify "AVRO". For Google Cloud Datastore backups, specify
-	// "DATASTORE_BACKUP". [Experimental] For Google Cloud Bigtable, specify
-	// "BIGTABLE". Please note that reading from Google Cloud Bigtable is
-	// experimental and has to be enabled for your project. Please contact
-	// Google Cloud Support to enable this for your project.
+	// "DATASTORE_BACKUP". [Beta] For Google Cloud Bigtable, specify
+	// "BIGTABLE".
 	SourceFormat string `json:"sourceFormat,omitempty"`
 
 	// SourceUris: [Required] The fully-qualified URIs that point to your
@@ -957,9 +949,9 @@ type GetQueryResultsResponse struct {
 	// Kind: The resource type of the response.
 	Kind string `json:"kind,omitempty"`
 
-	// NumDmlAffectedRows: [Output-only, Experimental] The number of rows
-	// affected by a DML statement. Present only for DML statements INSERT,
-	// UPDATE or DELETE.
+	// NumDmlAffectedRows: [Output-only] The number of rows affected by a
+	// DML statement. Present only for DML statements INSERT, UPDATE or
+	// DELETE.
 	NumDmlAffectedRows int64 `json:"numDmlAffectedRows,omitempty,string"`
 
 	// PageToken: A token used for paging results.
@@ -1159,11 +1151,10 @@ type JobConfiguration struct {
 
 	// Labels: [Experimental] The labels associated with this job. You can
 	// use these to organize and group your jobs. Label keys and values can
-	// be no longer than 63 characters, can only contain letters, numeric
-	// characters, underscores and dashes. International characters are
-	// allowed. Label values are optional. Label keys must start with a
-	// letter and must be unique within a dataset. Both keys and values are
-	// additionally constrained to be <= 128 bytes in size.
+	// be no longer than 63 characters, can only contain lowercase letters,
+	// numeric characters, underscores and dashes. International characters
+	// are allowed. Label values are optional. Label keys must start with a
+	// letter and each label in the list must have a different key.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// Load: [Pick one] Configures a load job.
@@ -1266,8 +1257,8 @@ type JobConfigurationLoad struct {
 	// value is false.
 	AllowQuotedNewlines bool `json:"allowQuotedNewlines,omitempty"`
 
-	// Autodetect: [Experimental] Indicates if we should automatically infer
-	// the options and schema for CSV and JSON sources.
+	// Autodetect: Indicates if we should automatically infer the options
+	// and schema for CSV and JSON sources.
 	Autodetect bool `json:"autodetect,omitempty"`
 
 	// CreateDisposition: [Optional] Specifies whether the job is allowed to
@@ -1319,18 +1310,17 @@ type JobConfigurationLoad struct {
 	// value in a CSV file. For example, if you specify "\N", BigQuery
 	// interprets "\N" as a null value when loading a CSV file. The default
 	// value is the empty string. If you set this property to a custom
-	// value, BigQuery still interprets the empty string as a null value for
-	// all data types except for STRING and BYTE. For STRING and BYTE
-	// columns, BigQuery interprets the empty string as an empty value.
+	// value, BigQuery throws an error if an empty string is present for all
+	// data types except for STRING and BYTE. For STRING and BYTE columns,
+	// BigQuery interprets the empty string as an empty value.
 	NullMarker string `json:"nullMarker,omitempty"`
 
-	// ProjectionFields: [Experimental] If sourceFormat is set to
-	// "DATASTORE_BACKUP", indicates which entity properties to load into
-	// BigQuery from a Cloud Datastore backup. Property names are case
-	// sensitive and must be top-level properties. If no properties are
-	// specified, BigQuery loads all properties. If any named property isn't
-	// found in the Cloud Datastore backup, an invalid error is returned in
-	// the job result.
+	// ProjectionFields: If sourceFormat is set to "DATASTORE_BACKUP",
+	// indicates which entity properties to load into BigQuery from a Cloud
+	// Datastore backup. Property names are case sensitive and must be
+	// top-level properties. If no properties are specified, BigQuery loads
+	// all properties. If any named property isn't found in the Cloud
+	// Datastore backup, an invalid error is returned in the job result.
 	ProjectionFields []string `json:"projectionFields,omitempty"`
 
 	// Quote: [Optional] The value that is used to quote data sections in a
@@ -1424,9 +1414,11 @@ func (s *JobConfigurationLoad) MarshalJSON() ([]byte, error) {
 }
 
 type JobConfigurationQuery struct {
-	// AllowLargeResults: If true, allows the query to produce arbitrarily
-	// large result tables at a slight cost in performance. Requires
-	// destinationTable to be set.
+	// AllowLargeResults: [Optional] If true and query uses legacy SQL
+	// dialect, allows the query to produce arbitrarily large result tables
+	// at a slight cost in performance. Requires destinationTable to be set.
+	// For standard SQL queries, this flag is ignored and large results are
+	// always allowed.
 	AllowLargeResults bool `json:"allowLargeResults,omitempty"`
 
 	// CreateDisposition: [Optional] Specifies whether the job is allowed to
@@ -1447,9 +1439,10 @@ type JobConfigurationQuery struct {
 	// to store the results.
 	DestinationTable *TableReference `json:"destinationTable,omitempty"`
 
-	// FlattenResults: [Optional] Flattens all nested and repeated fields in
-	// the query results. The default value is true. allowLargeResults must
-	// be true if this is set to false.
+	// FlattenResults: [Optional] If true and query uses legacy SQL dialect,
+	// flattens all nested and repeated fields in the query results.
+	// allowLargeResults must be true if this is set to false. For standard
+	// SQL queries, this flag is ignored and results are never flattened.
 	//
 	// Default: true
 	FlattenResults *bool `json:"flattenResults,omitempty"`
@@ -1468,9 +1461,9 @@ type JobConfigurationQuery struct {
 	// your project default.
 	MaximumBytesBilled int64 `json:"maximumBytesBilled,omitempty,string"`
 
-	// ParameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to
-	// use positional (?) query parameters or to NAMED to use named
-	// (@myparam) query parameters in this query.
+	// ParameterMode: Standard SQL only. Set to POSITIONAL to use positional
+	// (?) query parameters or to NAMED to use named (@myparam) query
+	// parameters in this query.
 	ParameterMode string `json:"parameterMode,omitempty"`
 
 	// PreserveNulls: [Deprecated] This property is deprecated.
@@ -1523,8 +1516,8 @@ type JobConfigurationQuery struct {
 	// Default: true
 	UseQueryCache *bool `json:"useQueryCache,omitempty"`
 
-	// UserDefinedFunctionResources: [Experimental] Describes user-defined
-	// function resources used in the query.
+	// UserDefinedFunctionResources: Describes user-defined function
+	// resources used in the query.
 	UserDefinedFunctionResources []*UserDefinedFunctionResource `json:"userDefinedFunctionResources,omitempty"`
 
 	// WriteDisposition: [Optional] Specifies the action that occurs if the
@@ -1805,13 +1798,12 @@ type JobStatistics2 struct {
 	// query cache.
 	CacheHit bool `json:"cacheHit,omitempty"`
 
-	// NumDmlAffectedRows: [Output-only, Experimental] The number of rows
-	// affected by a DML statement. Present only for DML statements INSERT,
-	// UPDATE or DELETE.
+	// NumDmlAffectedRows: [Output-only] The number of rows affected by a
+	// DML statement. Present only for DML statements INSERT, UPDATE or
+	// DELETE.
 	NumDmlAffectedRows int64 `json:"numDmlAffectedRows,omitempty,string"`
 
-	// QueryPlan: [Output-only, Experimental] Describes execution plan for
-	// the query.
+	// QueryPlan: [Output-only] Describes execution plan for the query.
 	QueryPlan []*ExplainQueryStage `json:"queryPlan,omitempty"`
 
 	// ReferencedTables: [Output-only, Experimental] Referenced tables for
@@ -2242,9 +2234,9 @@ type QueryRequest struct {
 	// only the byte limit applies.
 	MaxResults int64 `json:"maxResults,omitempty"`
 
-	// ParameterMode: [Experimental] Standard SQL only. Set to POSITIONAL to
-	// use positional (?) query parameters or to NAMED to use named
-	// (@myparam) query parameters in this query.
+	// ParameterMode: Standard SQL only. Set to POSITIONAL to use positional
+	// (?) query parameters or to NAMED to use named (@myparam) query
+	// parameters in this query.
 	ParameterMode string `json:"parameterMode,omitempty"`
 
 	// PreserveNulls: [Deprecated] This property is deprecated.
@@ -2255,8 +2247,7 @@ type QueryRequest struct {
 	// [myProjectId:myDatasetId.myTableId]".
 	Query string `json:"query,omitempty"`
 
-	// QueryParameters: [Experimental] Query parameters for Standard SQL
-	// queries.
+	// QueryParameters: Query parameters for Standard SQL queries.
 	QueryParameters []*QueryParameter `json:"queryParameters,omitempty"`
 
 	// TimeoutMs: [Optional] How long to wait for the query to complete, in
@@ -2335,9 +2326,9 @@ type QueryResponse struct {
 	// Kind: The resource type.
 	Kind string `json:"kind,omitempty"`
 
-	// NumDmlAffectedRows: [Output-only, Experimental] The number of rows
-	// affected by a DML statement. Present only for DML statements INSERT,
-	// UPDATE or DELETE.
+	// NumDmlAffectedRows: [Output-only] The number of rows affected by a
+	// DML statement. Present only for DML statements INSERT, UPDATE or
+	// DELETE.
 	NumDmlAffectedRows int64 `json:"numDmlAffectedRows,omitempty,string"`
 
 	// PageToken: A token used for paging results.
@@ -2461,11 +2452,11 @@ type Table struct {
 
 	// Labels: [Experimental] The labels associated with this table. You can
 	// use these to organize and group your tables. Label keys and values
-	// can be no longer than 63 characters, can only contain letters,
-	// numeric characters, underscores and dashes. International characters
-	// are allowed. Label values are optional. Label keys must start with a
-	// letter and must be unique within a dataset. Both keys and values are
-	// additionally constrained to be <= 128 bytes in size.
+	// can be no longer than 63 characters, can only contain lowercase
+	// letters, numeric characters, underscores and dashes. International
+	// characters are allowed. Label values are optional. Label keys must
+	// start with a letter and each label in the list must have a different
+	// key.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// LastModifiedTime: [Output-only] The time when this table was last
@@ -2876,6 +2867,9 @@ type TableListTables struct {
 	// Type: The type of table. Possible values are: TABLE, VIEW.
 	Type string `json:"type,omitempty"`
 
+	// View: Additional details for a view.
+	View *TableListTablesView `json:"view,omitempty"`
+
 	// ForceSendFields is a list of field names (e.g. "FriendlyName") to
 	// unconditionally include in API requests. By default, fields with
 	// empty values are omitted from API requests. However, any non-pointer,
@@ -2895,6 +2889,35 @@ type TableListTables struct {
 
 func (s *TableListTables) MarshalJSON() ([]byte, error) {
 	type noMethod TableListTables
+	raw := noMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// TableListTablesView: Additional details for a view.
+type TableListTablesView struct {
+	// UseLegacySql: True if view is defined in legacy SQL dialect, false if
+	// in standard SQL.
+	UseLegacySql bool `json:"useLegacySql,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "UseLegacySql") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "UseLegacySql") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *TableListTablesView) MarshalJSON() ([]byte, error) {
+	type noMethod TableListTablesView
 	raw := noMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
@@ -3066,8 +3089,8 @@ type ViewDefinition struct {
 	// that reference this view must use the same flag value.
 	UseLegacySql bool `json:"useLegacySql,omitempty"`
 
-	// UserDefinedFunctionResources: [Experimental] Describes user-defined
-	// function resources used in the query.
+	// UserDefinedFunctionResources: Describes user-defined function
+	// resources used in the query.
 	UserDefinedFunctionResources []*UserDefinedFunctionResource `json:"userDefinedFunctionResources,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Query") to
@@ -3154,7 +3177,6 @@ func (c *DatasetsDeleteCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{projectId}/datasets/{datasetId}")
@@ -3277,7 +3299,6 @@ func (c *DatasetsGetCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3416,7 +3437,6 @@ func (c *DatasetsInsertCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.dataset)
 	if err != nil {
@@ -3592,7 +3612,6 @@ func (c *DatasetsListCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -3770,7 +3789,6 @@ func (c *DatasetsPatchCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.dataset)
 	if err != nil {
@@ -3917,7 +3935,6 @@ func (c *DatasetsUpdateCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.dataset)
 	if err != nil {
@@ -4063,7 +4080,6 @@ func (c *JobsCancelCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{projectId}/jobs/{jobId}/cancel")
@@ -4211,7 +4227,6 @@ func (c *JobsGetCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -4391,7 +4406,6 @@ func (c *JobsGetQueryResultsCall) doRequest(alt string) (*http.Response, error) 
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -4628,7 +4642,6 @@ func (c *JobsInsertCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.job)
 	if err != nil {
@@ -4887,7 +4900,6 @@ func (c *JobsListCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5085,7 +5097,6 @@ func (c *JobsQueryCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.queryrequest)
 	if err != nil {
@@ -5243,7 +5254,6 @@ func (c *ProjectsListCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5399,7 +5409,6 @@ func (c *TabledataInsertAllCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.tabledatainsertallrequest)
 	if err != nil {
@@ -5538,6 +5547,14 @@ func (c *TabledataListCall) PageToken(pageToken string) *TabledataListCall {
 	return c
 }
 
+// SelectedFields sets the optional parameter "selectedFields": List of
+// fields to return (comma-separated). If unspecified, all fields are
+// returned
+func (c *TabledataListCall) SelectedFields(selectedFields string) *TabledataListCall {
+	c.urlParams_.Set("selectedFields", selectedFields)
+	return c
+}
+
 // StartIndex sets the optional parameter "startIndex": Zero-based index
 // of the starting row to read
 func (c *TabledataListCall) StartIndex(startIndex uint64) *TabledataListCall {
@@ -5586,7 +5603,6 @@ func (c *TabledataListCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5672,6 +5688,11 @@ func (c *TabledataListCall) Do(opts ...googleapi.CallOption) (*TableDataList, er
 	//       "description": "Project ID of the table to read",
 	//       "location": "path",
 	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "selectedFields": {
+	//       "description": "List of fields to return (comma-separated). If unspecified, all fields are returned",
+	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "startIndex": {
@@ -5774,7 +5795,6 @@ func (c *TablesDeleteCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{projectId}/datasets/{datasetId}/tables/{tableId}")
@@ -5863,6 +5883,14 @@ func (r *TablesService) Get(projectId string, datasetId string, tableId string) 
 	return c
 }
 
+// SelectedFields sets the optional parameter "selectedFields": List of
+// fields to return (comma-separated). If unspecified, all fields are
+// returned
+func (c *TablesGetCall) SelectedFields(selectedFields string) *TablesGetCall {
+	c.urlParams_.Set("selectedFields", selectedFields)
+	return c
+}
+
 // Fields allows partial responses to be retrieved. See
 // https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
 // for more information.
@@ -5904,7 +5932,6 @@ func (c *TablesGetCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -5981,6 +6008,11 @@ func (c *TablesGetCall) Do(opts ...googleapi.CallOption) (*Table, error) {
 	//       "required": true,
 	//       "type": "string"
 	//     },
+	//     "selectedFields": {
+	//       "description": "List of fields to return (comma-separated). If unspecified, all fields are returned",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
 	//     "tableId": {
 	//       "description": "Table ID of the requested table",
 	//       "location": "path",
@@ -6053,7 +6085,6 @@ func (c *TablesInsertCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.table)
 	if err != nil {
@@ -6222,7 +6253,6 @@ func (c *TablesListCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	if c.ifNoneMatch_ != "" {
 		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
 	}
@@ -6400,7 +6430,6 @@ func (c *TablesPatchCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.table)
 	if err != nil {
@@ -6557,7 +6586,6 @@ func (c *TablesUpdateCall) doRequest(alt string) (*http.Response, error) {
 		reqHeaders[k] = v
 	}
 	reqHeaders.Set("User-Agent", c.s.userAgent())
-	reqHeaders.Set("x-goog-api-client", c.s.clientHeader())
 	var body io.Reader = nil
 	body, err := googleapi.WithoutDataWrapper.JSONReader(c.table)
 	if err != nil {

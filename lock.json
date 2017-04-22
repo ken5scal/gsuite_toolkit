@@ -1,10 +1,10 @@
 {
-    "memo": "058cd765b16d6d0889d6fc28966ecadac9b4d78d1d670d170acd6209faae6370",
+    "memo": "41cd5a28b535137bb84075e52fccb744afd2ef32009d2e0c0435a3b148fddaf3",
     "projects": [
         {
             "name": "cloud.google.com/go",
-            "version": "v0.6.0",
-            "revision": "c116c7972ec94f148459a304d07a67ecbc770d4b",
+            "version": "v0.7.0",
+            "revision": "2e6a95edb1071d750f6d7db777bf66cd2997af6c",
             "packages": [
                 "compute/metadata",
                 "internal"
@@ -12,8 +12,16 @@
         },
         {
             "name": "github.com/BurntSushi/toml",
-            "version": "v0.2.0",
-            "revision": "bbd5bb678321a0d6e58f1099321dfa73391c1b6f",
+            "version": "v0.3.0",
+            "revision": "b26d9c308763d68093482582cea63d69be07a0f0",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/asaskevich/govalidator",
+            "version": "v5",
+            "revision": "7b3beb6df3c42abd3509abfc3bcacc0fbfb7c877",
             "packages": [
                 "."
             ]
@@ -21,7 +29,7 @@
         {
             "name": "github.com/golang/protobuf",
             "branch": "master",
-            "revision": "69b215d01a5606c843240eab4937eab3acee6530",
+            "revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
             "packages": [
                 "proto"
             ]
@@ -29,7 +37,7 @@
         {
             "name": "github.com/googleapis/gax-go",
             "branch": "master",
-            "revision": "da06d194a00e19ce00d9011a13931c3f6f6887c7",
+            "revision": "9af46dd5a1713e8b5cd71106287eba3cefdde50b",
             "packages": [
                 "."
             ]
@@ -37,7 +45,7 @@
         {
             "name": "github.com/urfave/cli",
             "branch": "master",
-            "revision": "2526b57c56f30b50466c96c4133b1a4ad0f0191f",
+            "revision": "8ba6f23b6e36d03666a14bd9421f5e3efcb59aca",
             "packages": [
                 "."
             ]
@@ -45,7 +53,7 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "dd2d9a67c97da0afa00d5726e28086007a0acce5",
+            "revision": "0b588ed7a0cd59c271d128ec8c429c1c1607e8ab",
             "packages": [
                 "context",
                 "context/ctxhttp",
@@ -60,7 +68,7 @@
         {
             "name": "golang.org/x/oauth2",
             "branch": "master",
-            "revision": "b9780ec78894ab900c062d58ee3076cd9b2a4501",
+            "revision": "a6bd8cefa1811bd24b86f8902872e4e8225f74c4",
             "packages": [
                 ".",
                 "google",
@@ -70,9 +78,25 @@
             ]
         },
         {
+            "name": "golang.org/x/text",
+            "branch": "master",
+            "revision": "a9a820217f98f7c8a207ec1e45a874e1fe12c478",
+            "packages": [
+                "internal/gen",
+                "internal/triegen",
+                "internal/ucd",
+                "secure/bidirule",
+                "transform",
+                "unicode/bidi",
+                "unicode/cldr",
+                "unicode/norm",
+                "unicode/rangetable"
+            ]
+        },
+        {
             "name": "google.golang.org/api",
             "branch": "master",
-            "revision": "64485db7e8c8be51e572801d06cdbcfadd3546c1",
+            "revision": "fbbaff1827317122a8a0e1b24de25df8417ce87b",
             "packages": [
                 "admin/directory/v1",
                 "admin/reports/v1",
@@ -101,14 +125,15 @@
         },
         {
             "name": "google.golang.org/grpc",
-            "version": "v1.0.5",
-            "revision": "708a7f9f3283aa2d4f6132d287d78683babe55c8",
+            "version": "v1.2.1",
+            "revision": "8050b9cbc271307e5a716a9d782803d09b0d6f2d",
             "packages": [
                 ".",
                 "codes",
                 "credentials",
                 "grpclog",
                 "internal",
+                "keepalive",
                 "metadata",
                 "naming",
                 "peer",
