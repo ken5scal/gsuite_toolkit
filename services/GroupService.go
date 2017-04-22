@@ -3,7 +3,11 @@ package services
 import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
+	"fmt"
 )
+
+// Group Descriptor
+// https://developers.google.com/admin-sdk/directory/v1/reference/groups?authuser=1#resource
 
 // GroupService provides
 // Details are available in a folling link

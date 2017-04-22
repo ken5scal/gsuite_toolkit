@@ -91,6 +91,18 @@ func main() {
 					},
 				},
 				{
+					Name: "group",
+					Usage: "get group",
+					Action: func(context *cli.Context) error {
+						if context.NArg() != 1 {
+							return errors.New("Too few argument. Specify email.")
+						} else if !govalidator.IsEmail(context.Args()[0]) {
+							return errors.New("Wrong email format.")
+						}
+						return action.(*actions.GroupAction).GetGroup(context.Args()[0])
+					},
+				},
+				{
 					Name: "search",
 					Usage: "search groups by member's email.",
 					Action: func(context *cli.Context) error {

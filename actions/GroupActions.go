@@ -25,6 +25,18 @@ func (action *GroupAction) SetService(s services.Service) error {
 	return nil
 }
 
+// GetGroup fetches a group by its email
+func (action GroupAction) GetGroup(email string) error {
+	if g, err := action.GroupService.GetGroup(email); err != nil {
+		return err
+	} else {
+		fmt.Println(g.Email)
+		fmt.Println(g.Description)
+		fmt.Println(g.AdminCreated)
+	}
+	return nil
+}
+
 // RetrieveAllGroups fetched entire group in same domain
 func (action GroupAction) RetrieveAllGroups(domain string) error {
 	if g, err := action.GroupService.RetrieveAllGroups(domain, ""); err != nil {
