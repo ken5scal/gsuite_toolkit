@@ -23,3 +23,9 @@
 - ログイン設定（２要素認証設定)
 - ファイル権限
 - ファイル旧友設定
+
+# Command
+* MY_EXECUTABLE [optional flags] <group | commands>
+* MY_EXECUTABLE group [optional flags] <group | commands>
+* MY_EXECUTABLE group sub_group [optional flags] <command>
+
