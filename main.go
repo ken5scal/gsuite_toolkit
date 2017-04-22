@@ -85,7 +85,7 @@ func main() {
 				{
 					Name: "list", Usage: "list existing groups",
 					Action: func(context *cli.Context) error {
-						return nil
+						return a.(*actions.GroupAction).RetrieveAllGroups()
 					},
 				},
 			},

@@ -21,3 +21,14 @@ func (a *GroupAction) SetService(s services.Service) error {
 	a.GroupService = s.(*services.GroupService)
 	return nil
 }
+
+func (action GroupAction) RetrieveAllGroups() error {
+	if g, err := action.GroupService.RetrieveAllGroups(); err != nil {
+		return err
+	} else {
+		for _, group := range g {
+			fmt.Println(group.Name + " - " + group.Email)
+		}
+	}
+	return nil
+}
