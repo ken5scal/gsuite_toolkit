@@ -21,7 +21,6 @@ import (
 
 const (
 	ClientSecretFileName = "client_secret.json"
-	CommandLogin         = "login"
 )
 
 type network struct {
@@ -167,8 +166,7 @@ func main() {
 			},
 		},
 		{
-			Name: CommandLogin, Category: CommandLogin,
-			Usage: "Gain insights on content management with Google Drive activity reports. Audit administrator actions. Generate customer and user usage reports.",
+			Name: "user", Category: "user",
 			Before: func(*cli.Context) error {
 				action = actions.InitLoginAction()
 				service = services.InitAuditService()
