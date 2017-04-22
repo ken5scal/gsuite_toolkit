@@ -75,7 +75,10 @@ func main() {
 					Name: "list", Usage: "list existing groups",
 					Action: func(context *cli.Context) error {
 						a = actions.InitGroupAction()
-
+						if err := a.SetService(s); err != nil {
+							return err
+						}
+						return nil
 					},
 				},
 			},
