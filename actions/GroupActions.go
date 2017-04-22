@@ -25,6 +25,7 @@ func (action *GroupAction) SetService(s services.Service) error {
 	return nil
 }
 
+// RetrieveAllGroups fetched entire group in same domain
 func (action GroupAction) RetrieveAllGroups(domain string) error {
 	if g, err := action.GroupService.RetrieveAllGroups(domain, ""); err != nil {
 		return err
@@ -36,6 +37,7 @@ func (action GroupAction) RetrieveAllGroups(domain string) error {
 	return nil
 }
 
+// SearchGroupsByEmail searches groups where email account belongs.
 func (action GroupAction) SearchGroupsByEmail(domain, email string) error {
 	if g, err := action.GroupService.RetrieveAllGroups(domain, email); err != nil {
 		return err
