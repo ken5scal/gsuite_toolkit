@@ -15,7 +15,7 @@ type OrganizationService struct {
 	*http.Client
 }
 
-// SetClient creates instance of Organization related Services
+// InitOrganizationService creates instance of Organization related Services
 func InitOrganizationService() (*OrganizationService) {
 	return &OrganizationService{}
 }
