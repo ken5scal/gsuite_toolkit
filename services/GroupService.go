@@ -31,7 +31,7 @@ func (s *GroupService) SetClient(client *http.Client) (error) {
 }
 
 func (s *GroupService) RetrieveAllGroups() ([]*admin.Group, error) {
-	call := s.GroupsService.List().Customer("my_customer").MaxResults(3)
+	call := s.GroupsService.List().Customer("my_customer")
 	var groups []*admin.Group
 	for {
 		g, e := call.Do()
