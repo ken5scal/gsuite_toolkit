@@ -35,7 +35,7 @@ func (s *AuditService) getAllActivities() {
 	s.ActivitiesService.List("all", "admin")
 }
 
-// getSAMLlogin: This is just experimental
+// getSAMLlogin: This is just experimental so leave as it is.
 // Activities: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
 // Parameter: https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1
 // userKey: all or specific email
@@ -45,6 +45,6 @@ func (s *AuditService) getAllActivities() {
 //      choose from https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1#login
 // filters: ex) login_type==google_password, login_failure_type<> login_failure_unknown
 //      choose from https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1#login
-func (s *AuditService) getSamlLogin() {
+func (s *AuditService) getWhatever() {
 
 }
