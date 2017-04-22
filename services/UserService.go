@@ -69,6 +69,7 @@ func (s *UserService) ChangeOrgUnit(user *admin.User, unit string) (*admin.User,
 	return s.UsersService.Update(user.PrimaryEmail, user).Do()
 }
 
+// GetUsersWithRareLogin detects who has not logged in recently.
 func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.User, error) {
 	users, err := s.GetAllUsersInDomain(domain, 500)
 	if err != nil {
@@ -89,8 +90,4 @@ func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.U
 	}
 
 	return goneUsers, nil
-}
-
-func (s *UserService) RepeatCallerUntilNoPageToken() error {
-	return nil
 }
