@@ -62,8 +62,10 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
-			Name: actions.CommandDrive, Category: actions.CommandDrive,
-			Usage: actions.GeneralUsage,
+		},
+		{
+			Name: "drive", Category: "drive",
+			Usage: "Audit files within Google Drive",
 			Before: func(*cli.Context) error {
 				s = services.InitDriveService()
 				return s.SetClient(gsuiteClient)
@@ -71,7 +73,7 @@ func main() {
 			Action: showHelpFunc,
 			Subcommands: []cli.Command{
 				{
-					Name: actions.SubCommandList, Usage: actions.ListUsage,
+					Name: "list", Usage: "list existing files",
 					Action: func(context *cli.Context) error {
 						action, err := actions.NewDriveAction(s)
 						if err != nil {
@@ -81,7 +83,7 @@ func main() {
 					},
 				},
 				{
-					Name: actions.SubCommandSearch, Usage: actions.SearchUsage,
+					Name: "search", Usage: "search a keyword buy specifying an argument",
 					Action: func(context *cli.Context) error {
 						if context.NArg() != 1 {
 							return errors.New("Number of keyword must be exactly 1")

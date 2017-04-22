@@ -15,12 +15,6 @@ type DriveAction struct {
 
 const (
 	FolderMimeType = "application/vnd.google-apps.folder"
-	CommandDrive         = "drive"
-	SubCommandList = "list"
-	SubCommandSearch = "list"
-	GeneralUsage = "Audit files within Google Drive"
-	ListUsage = "list all files"
-	SearchUsage = "search a keyword buy specifying an argument"
 )
 
 func NewDriveAction(s services.Service) (*DriveAction, error) {
