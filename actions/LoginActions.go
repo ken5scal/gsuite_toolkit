@@ -31,7 +31,7 @@ func (action *LoginAction) SetService(s services.Service) error {
 
 // TODO Check Admin Login
 func (action LoginAction) GetAllAdminUsers(domain string) error {
-	// This can be chan.
+	// TODO Make this chan
 	users, err := action.user.GetAllAdmins(domain)
 	if err != nil {
 		return err

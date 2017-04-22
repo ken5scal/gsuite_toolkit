@@ -190,6 +190,12 @@ func main() {
 			Action: showHelpFunc,
 			Subcommands: []cli.Command{
 				{
+					Name: "list_admin",
+					Action: func(context *cli.Context) error {
+						return action.(*actions.LoginAction).GetAllAdminUsers(tomlConf.Owner.Domain)
+					},
+				},
+				{
 					// TODO probably account command?
 					Name:  "non2sv", Usage: "get employees who have not enabled 2sv",
 					Action: func(context *cli.Context) error {
