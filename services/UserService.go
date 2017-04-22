@@ -30,6 +30,10 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
+func (s *UserService) GetAllAdmin(domain string) (*admin.Users, error) {
+
+}
+
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
 // max shoudl be integer lower than 500
