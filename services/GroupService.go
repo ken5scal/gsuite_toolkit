@@ -40,7 +40,7 @@ func (s *GroupService) GetGroup(groupEmail string) (*admin.Group, error) {
 	return s.GroupsService.Get(groupEmail).Do()
 }
 
-// RetrieveAllgroups Rrtrieves a paginated list of groups in a domain.
+// RetrieveAllGroups retrieves a paginated list of groups in a domain.
 // https://developers.google.com/admin-sdk/directory/v1/reference/groups/list?authuser=1
 func (s *GroupService) RetrieveAllGroups(domain, email string) ([]*admin.Group, error) {
 	call := s.GroupsService.List().
