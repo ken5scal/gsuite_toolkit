@@ -147,7 +147,8 @@ func main() {
 			},
 		},
 		{
-			Name: CommandLogin, Category: CommandLogin, Usage: "Gain insights on content management with Google Drive activity reports. Audit administrator actions. Generate customer and user usage reports.",
+			Name: CommandLogin, Category: CommandLogin,
+			Usage: "Gain insights on content management with Google Drive activity reports. Audit administrator actions. Generate customer and user usage reports.",
 			Before: func(*cli.Context) error {
 				action = actions.InitLoginAction()
 				service = services.InitReportService()
@@ -178,7 +179,7 @@ func main() {
 					},
 				},
 				{
-					Name:  "suspicious_login", Usage: "get employees who have not been office for 30 days, but accessing",
+					Name:  "suspicious-login", Usage: "get employees who have not been office for 30 days, but accessing",
 					Action: func(c *cli.Context) error {
 						activities, err := action.(*actions.LoginAction).GetAllLoginActivities(45)
 						if err != nil {

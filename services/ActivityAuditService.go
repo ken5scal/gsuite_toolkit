@@ -6,7 +6,26 @@ import (
 	"time"
 	"strings"
 	"google.golang.org/api/googleapi"
+	"strconv"
 )
+
+/*
+	Google provides Report API in purpose of auditing various Activities
+	To see a list of activities to be audited, visit following:
+		https://developers.google.com/admin-sdk/reports/v1/reference/activities?authuser=1
+	Each activities have different event name and parameters. To understand them, visit "Reports" on bottom left of menu bar
+	For example, if you want to audit Admin events on users, visit following:
+	    https://developers.google.com/admin-sdk/reports/v1/reference/activity-ref-appendix-a/admin-user-events?authuser=1
+
+	EX) Listing activities that undergoes creating new user by any user, then do following:
+	  1: Visit https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
+	  2: Input parameters
+	        * userkey: all
+	        * applicationName: admin
+	        * eventName: CREATE_USER
+	        * filters: USER_EMAIL==hoge@yourdomain.com
+	        * startTime: 2017-04-01T00:00:00.000Z
+ */
 
 // AuditService provides following functions.
 // Content management with Google Drive activity reports.
@@ -62,6 +81,33 @@ func (s *AuditService) getWhatever() {
 // https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
 func (s *AuditService) getAllActivities() {
 	s.ActivitiesService.List("all", "admin")
+}
+
+// ListUserCreatedEvents
+// Weekly, Monthly...
+func (s *AuditService) ListUserCreatedEvents() ([]*admin.Activity, error) {
+	year, month, _ := time.Now().Date()
+	// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
+	startTime := strconv.Itoa(year) + "-" + month.String() + "-01T00:00:00.000Z"
+
+	call := s.ActivitiesService.
+		List("all", "admin").
+		EventName("CREATE_USER").
+		StartTime(startTime)
+
+	// ToDO: I want to make this common
+	var activities []*admin.Activity
+	for {
+		if g, e := call.Do(); e != nil {
+			return nil, e
+		} else {
+			activities = append(activities, g.Items...)
+			if g.NextPageToken == "" {
+				return activities, nil
+			}
+			call.PageToken(g.NextPageToken)
+		}
+	}
 }
 
 // GetUserUsage returns G Suite service activities across your account's Users
