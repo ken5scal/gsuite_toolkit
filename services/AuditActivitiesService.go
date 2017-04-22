@@ -6,7 +6,7 @@ import (
 	"time"
 	"strings"
 	"google.golang.org/api/googleapi"
-	"strconv"
+	"fmt"
 )
 
 /*
@@ -95,34 +95,30 @@ const (
 // ListUserCreatedEvents
 // Weekly, Monthly...
 func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
-	var year, day int
-	var month time.Month
 	now := time.Now()
 	switch d {
 	case This_Week:
+		fmt.Println("this_week")
 		for now.Weekday() != time.Monday {
 			now = now.AddDate(0, 0, -1)
 		}
-		year, month, day = now.Date()
 	case This_Month:
-		year, month, _ = now.Date()
-		day = 01
+		now = now.AddDate(0, 0, -(now.Day() - 1))
 	case Last_Month:
-		year, month, _ = now.AddDate(0, -1, 0).Date()
-		day = 01
+		now = now.AddDate(0, -1, -(now.Day() - 1))
 	case Last_Three_Month:
-		year, month, _ = now.AddDate(0, -3, 0).Date()
-		day = 01
+		now = now.AddDate(0, -3, -(now.Day() - 1))
 	case Half_Year:
-		year, month, _ = now.AddDate(0, -6, 0).Date()
-		day = 01
+		now = now.AddDate(0, -6, -(now.Day() - 1))
 	}
+
+	fmt.Println(now.Format(time.RFC3339))
 
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("CREATE_USER").
 		// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
-		StartTime(strconv.Itoa(year) + "-" + month.String() + "-" + strconv.Itoa(day) + "T00:00:00.000Z")
+		StartTime(now.Format(time.RFC3339))
 
 	// ToDO: I want to make this common
 	var activities []*admin.Activity
