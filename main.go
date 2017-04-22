@@ -71,6 +71,26 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
+			Name: "audit", Category: "audit",
+			Usage: "Audit hogehoge",
+			Before: func(context *cli.Context) error {
+				service = services.InitAuditService()
+				if err = service.SetClient(gsuiteClient); err != nil {
+					return nil
+				}
+				action = actions.InitAuditAction()
+				return setServiceToAction(service, action)
+			},
+			Subcommands: []cli.Command {
+				{
+					Name: "user_created",
+					Action: func(context *cli.Context) error {
+						return action.(*actions.AuditAction).GetCreatedUserInLastMonth()
+					},
+				},
+			},
+		},
+		{
 			Name: "group", Category: "group",
 			Usage: "Audit and manage groups within GSuite",
 			Before: func(context *cli.Context) error {
@@ -151,7 +171,7 @@ func main() {
 			Usage: "Gain insights on content management with Google Drive activity reports. Audit administrator actions. Generate customer and user usage reports.",
 			Before: func(*cli.Context) error {
 				action = actions.InitLoginAction()
-				service = services.InitReportService()
+				service = services.InitAuditService()
 				if err = service.SetClient(gsuiteClient); err != nil {
 					return nil
 				}

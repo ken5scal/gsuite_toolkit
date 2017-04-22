@@ -44,7 +44,7 @@ type AuditService struct {
 }
 
 // Initialize AuditService
-func InitReportService() (s *AuditService) {
+func InitAuditService() (s *AuditService) {
 	return &AuditService{}
 }
 
