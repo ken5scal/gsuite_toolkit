@@ -25,8 +25,18 @@ func (action *GroupAction) SetService(s services.Service) error {
 	return nil
 }
 
+func (action GroupAction) RetrieveAllGroups(domain string) error {
+	if g, err := action.GroupService.RetrieveAllGroups(domain, ""); err != nil {
+		return err
+	} else {
+		for _, group := range g {
+			fmt.Println(group.Name + " - " + group.Email)
+		}
+	}
+	return nil
+}
 
-func (action GroupAction) RetrieveAllGroups(domain, email string) error {
+func (action GroupAction) SearchGroupsByEmail(domain, email string) error {
 	if g, err := action.GroupService.RetrieveAllGroups(domain, email); err != nil {
 		return err
 	} else {

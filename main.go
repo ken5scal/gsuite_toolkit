@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strings"
 	"github.com/ken5scal/gsuite_toolkit/services"
+	"github.com/asaskevich/govalidator"
 )
 
 const (
@@ -83,16 +84,22 @@ func main() {
 			Action: showHelpFunc,
 			Subcommands: []cli.Command {
 				{
-					Name: "list", Usage: "list existing groups. By adding email address, it fetches groups where that email account belongs to.",
-					Description: "hogehoge",
+					Name: "list",
+					Usage: "list existing groups. By adding email address, it fetches groups where that email account belongs to.",
 					Action: func(context *cli.Context) error {
-						var email string
-						if context.NArg() == 0 {
-							return action.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.Domain, email)
-						} else if context.NArg() == 1 {
-							return action.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.Domain, context.Args()[0])
+						return action.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.Domain)
+					},
+				},
+				{
+					Name: "search",
+					Usage: "search groups by member's email.",
+					Action: func(context *cli.Context) error {
+						if context.NArg() != 1 {
+							return errors.New("Too few argument. Specify email.")
+						} else if !govalidator.IsEmail(context.Args()[0]) {
+							return errors.New("Wrong email format.")
 						}
-						return errors.New("Argument must be either empty or email address")
+						return action.(*actions.GroupAction).SearchGroupsByEmail(tomlConf.Owner.Domain, context.Args()[0])
 					},
 				},
 			},
