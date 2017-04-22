@@ -8,7 +8,7 @@ import (
 )
 
 type LoginAction struct {
-	report *services.ReportService
+	report *services.AuditService
 	user *services.UserService
 }
 
@@ -17,12 +17,12 @@ func InitLoginAction() *LoginAction {
 }
 
 func (action *LoginAction) SetService(s services.Service) error {
-	_, ok := s.(*services.ReportService)
+	_, ok := s.(*services.AuditService)
 	_, ok2 := s.(*services.UserService)
 	if !(ok || ok2) {
 		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	} else if ok {
-		action.report = s.(*services.ReportService)
+		action.report = s.(*services.AuditService)
 	} else if ok2 {
 		action.user = s.(*services.UserService)
 	}
