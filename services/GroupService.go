@@ -30,8 +30,10 @@ func (s *GroupService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
-func (s *GroupService) RetrieveAllGroups(domain string) ([]*admin.Group, error) {
-	call := s.GroupsService.List().Customer("my_customer").Domain(domain)
+func (s *GroupService) RetrieveAllGroups(domain, email string) ([]*admin.Group, error) {
+	call := s.GroupsService.List().
+		Domain(domain).
+		UserKey(email)
 	var groups []*admin.Group
 	for {
 		g, e := call.Do()

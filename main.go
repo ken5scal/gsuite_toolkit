@@ -85,7 +85,14 @@ func main() {
 				{
 					Name: "list", Usage: "list existing groups",
 					Action: func(context *cli.Context) error {
-						return a.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.DomainName)
+						var email string
+						if context.NArg() == 1 {
+							email = context.Args()[0]
+						}
+						fmt.Println(tomlConf)
+						fmt.Println(tomlConf.Owner)
+						fmt.Println(email)
+						return a.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.Domain, email)
 					},
 				},
 			},
@@ -164,7 +171,7 @@ func main() {
 				{
 					Name:  "rare-login", Usage: "get employees who have not logged in for a while",
 					Action: func(context *cli.Context) error {
-						return a.(*actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.DomainName)
+						return a.(*actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.Domain)
 					},
 				},
 

@@ -7,7 +7,7 @@ type TomlConfig struct {
 }
 
 type DomainOwner struct {
-	DomainName string
+	Domain string
 	Organization string
 }
 

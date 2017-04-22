@@ -22,8 +22,8 @@ func (a *GroupAction) SetService(s services.Service) error {
 	return nil
 }
 
-func (action GroupAction) RetrieveAllGroups(domain string) error {
-	if g, err := action.GroupService.RetrieveAllGroups(domain); err != nil {
+func (action GroupAction) RetrieveAllGroups(domain, email string) error {
+	if g, err := action.GroupService.RetrieveAllGroups(domain, email); err != nil {
 		return err
 	} else {
 		for _, group := range g {
