@@ -7,23 +7,23 @@ import (
 	"github.com/ken5scal/gsuite_toolkit/services"
 )
 
-type ReportAction struct {
+type LoginAction struct {
 	report *services.ReportService
 	user *services.UserService
 }
 
-func NewReportAction(s services.Service) (*ReportAction, error) {
+func NewReportAction(s services.Service) (*LoginAction, error) {
 	if _, ok := s.(*services.ReportService); ok {
-		return &ReportAction{s.(*services.ReportService), nil}, nil
+		return &LoginAction{s.(*services.ReportService), nil}, nil
 	} else if _, ok := s.(*services.UserService); ok {
-		return &ReportAction{nil, s.(*services.UserService)}, nil
+		return &LoginAction{nil, s.(*services.UserService)}, nil
 	}
 	return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
 }
 
 // TODO Check Admin Login
 
-func (action ReportAction) GetNon2StepVerifiedUsers() error {
+func (action LoginAction) GetNon2StepVerifiedUsers() error {
 	report, err := action.report.Get2StepVerifiedStatusReport()
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (action ReportAction) GetNon2StepVerifiedUsers() error {
 	return nil
 }
 
-func (action ReportAction) GetAllLoginActivities(daysAgo int) ([]*admin.Activity, error) {
+func (action LoginAction) GetAllLoginActivities(daysAgo int) ([]*admin.Activity, error) {
 	activities, err := action.report.GetLoginActivities(daysAgo)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (action ReportAction) GetAllLoginActivities(daysAgo int) ([]*admin.Activity
 	return activities, nil
 }
 
-func (action ReportAction) GetUsersWithRareLogin(daysAgo int, name string) error {
+func (action LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error {
 	r, err := action.user.GetUsersWithRareLogin(daysAgo, name)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (action ReportAction) GetUsersWithRareLogin(daysAgo int, name string) error
 
 // GetIllegalLoginUsersAndIp
 // Main purpose is to detect employees who have not logged in from office for 30days
-func  (action ReportAction)  GetIllegalLoginUsersAndIp(activities []*admin.Activity, officeIPs []string) error {
+func  (action LoginAction)  GetIllegalLoginUsersAndIp(activities []*admin.Activity, officeIPs []string) error {
 	data := make(map[string]*LoginInformation)
 	for _, activity := range activities {
 		email := activity.Actor.Email
