@@ -112,7 +112,7 @@ func main() {
 						if err := a.SetService(s); err != nil {
 							return err
 						}
-						return a.(actions.DriveAction).SearchFoldersWithName(context.Args()[0])
+						return a.(actions.DriveAction).SearchFoldersByName(context.Args()[0])
 					},
 				},
 			},

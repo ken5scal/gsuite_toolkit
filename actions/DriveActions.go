@@ -29,7 +29,7 @@ func (a *DriveAction) SetService(s services.Service) error {
 	return nil
 }
 
-func (action DriveAction) SearchFoldersWithName(title string) error {
+func (action DriveAction) SearchFoldersByName(title string) error {
 	// 本来は'Googleフォーム'で検索したいが、検索結果が帰ってこない
 	if r, err := action.GetDriveMaterialsWithTitle(title, FolderMimeType); err !=nil {
 		return  err
