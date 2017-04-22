@@ -112,8 +112,6 @@ func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.A
 		now = now.AddDate(0, -6, -(now.Day() - 1))
 	}
 
-	fmt.Println(now.Format(time.RFC3339))
-
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("CREATE_USER").
