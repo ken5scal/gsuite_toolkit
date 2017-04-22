@@ -3,7 +3,6 @@ package services
 import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
-	"fmt"
 )
 
 // Group Descriptor
