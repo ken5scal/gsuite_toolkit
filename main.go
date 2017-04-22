@@ -31,6 +31,7 @@ type network struct {
 func main() {
 	var tomlConf models.TomlConfig
 	var s services.Service
+	var a actions.Action
 	var gsuiteClient *http.Client
 
 	_, err := toml.DecodeFile("gsuite_config.toml", &tomlConf)
@@ -65,12 +66,18 @@ func main() {
 			Name: "group", Category: "group",
 			Usage: "Audit and manage groups within GSuite",
 			Before: func(context *cli.Context) error {
-				s = services.InitOrganizationService()
+				s = services.InitGroupService()
 				return s.SetClient(gsuiteClient)
 			},
 			Action: showHelpFunc,
 			Subcommands: []cli.Command {
+				{
+					Name: "list", Usage: "list existing groups",
+					Action: func(context *cli.Context) error {
+						a = actions.InitGroupAction()
 
+					},
+				},
 			},
 		},
 		{
