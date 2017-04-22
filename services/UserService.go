@@ -30,7 +30,8 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 	return nil
 }
 
-func (s *UserService) GetAllAdmin(domain string) (*admin.Users.Users, error) {
+// GetAllAdmins return all Admins
+func (s *UserService) GetAllAdmins(domain string) (*admin.Users.Users, error) {
 	call := s.UsersService.List().Domain(domain).OrderBy("email").Query("isAdmin=true")
 	// ToDO: I want to make this common
 	var users []*admin.Users.Users
