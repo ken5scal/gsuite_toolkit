@@ -14,11 +14,11 @@ func InitGroupAction() *GroupAction {
 	return &GroupAction{}
 }
 
-func (a *GroupAction) SetService(s services.Service) error {
+func (action *GroupAction) SetService(s services.Service) error {
 	if _, ok := s.(*services.GroupService); !ok {
 		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	}
-	a.GroupService = s.(*services.GroupService)
+	action.GroupService = s.(*services.GroupService)
 	return nil
 }
 
