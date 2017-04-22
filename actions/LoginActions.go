@@ -30,6 +30,22 @@ func (action *LoginAction) SetService(s services.Service) error {
 }
 
 // TODO Check Admin Login
+func (action LoginAction) GetAllAdminUsers(domain string) error {
+	// This can be chan.
+	users, err := action.user.GetAllAdmins(domain)
+	if err != nil {
+		return err
+	}
+	hoge, err := action.user.GetAllDelegatedAdmins(domain)
+	if err != nil {
+		return err
+	}
+	users = append(users, hoge...)
+	for _, user := range users {
+		fmt.Println(user.PrimaryEmail)
+	}
+	return nil
+}
 
 func (action LoginAction) GetNon2StepVerifiedUsers() error {
 	report, err := action.report.Get2StepVerifiedStatusReport()
