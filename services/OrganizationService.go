@@ -122,3 +122,7 @@ func (err *OrgUnitCreateError) ConcatenateMessage(failedOrgUnit string, e error)
 
 	err.messages[failedOrgUnit] = e.Error()
 }
+
+func (s *OrganizationService) RepeatCallerUntilNoPageToken() error {
+	return nil
+}

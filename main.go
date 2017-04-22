@@ -62,6 +62,16 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
+			Name: "group", Category: "group",
+			Usage: "Audit and manage groups within GSuite",
+			Before: func(context *cli.Context) error {
+				s = services.InitOrganizationService()
+				return s.SetClient(gsuiteClient)
+			},
+			Action: showHelpFunc,
+			Subcommands: []cli.Command {
+
+			},
 		},
 		{
 			Name: "drive", Category: "drive",
