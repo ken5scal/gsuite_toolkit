@@ -85,7 +85,7 @@ func main() {
 				{
 					Name: "list", Usage: "list existing groups",
 					Action: func(context *cli.Context) error {
-						return a.(*actions.GroupAction).RetrieveAllGroups()
+						return a.(*actions.GroupAction).RetrieveAllGroups(tomlConf.Owner.DomainName)
 					},
 				},
 			},
