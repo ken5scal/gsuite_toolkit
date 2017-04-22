@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"errors"
 	"google.golang.org/api/admin/reports/v1"
-	"github.com/ken5scal/gsuite_toolkit/services/reports"
 	"github.com/ken5scal/gsuite_toolkit/services"
-	"github.com/ken5scal/gsuite_toolkit/services/users"
 )
 
 type ReportAction struct {
-	report *reports.Service
-	user *users.Service
+	report *services.ReportService
+	user *services.UserService
 }
 
 func NewReportAction(s services.Service) (*ReportAction, error) {
-	if _, ok := s.(*reports.Service); ok {
-		return &ReportAction{s.(*reports.Service), nil}, nil
-	} else if _, ok := s.(*users.Service); ok {
-		return &ReportAction{nil, s.(*users.Service)}, nil
+	if _, ok := s.(*services.ReportService); ok {
+		return &ReportAction{s.(*services.ReportService), nil}, nil
+	} else if _, ok := s.(*services.UserService); ok {
+		return &ReportAction{nil, s.(*services.UserService)}, nil
 	}
 	return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
 }

@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"github.com/ken5scal/gsuite_toolkit/services/drives"
 	"google.golang.org/api/drive/v3"
 	"fmt"
 	"strconv"
@@ -11,7 +10,7 @@ import (
 )
 
 type DriveAction struct {
-	*drives.Service
+	*services.DriveService
 }
 
 const (
@@ -25,10 +24,10 @@ const (
 )
 
 func NewDriveAction(s services.Service) (*DriveAction, error) {
-	if _, ok := s.(*drives.Service); !ok {
+	if _, ok := s.(*services.DriveService); !ok {
 		return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
 	}
-	return &DriveAction{s.(*drives.Service)}, nil
+	return &DriveAction{s.(*services.DriveService)}, nil
 }
 
 func (action DriveAction) SearchFoldersWithName(title string) error {
