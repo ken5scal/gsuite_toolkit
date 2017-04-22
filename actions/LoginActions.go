@@ -12,13 +12,21 @@ type LoginAction struct {
 	user *services.UserService
 }
 
-func NewReportAction(s services.Service) (*LoginAction, error) {
-	if _, ok := s.(*services.ReportService); ok {
-		return &LoginAction{s.(*services.ReportService), nil}, nil
-	} else if _, ok := s.(*services.UserService); ok {
-		return &LoginAction{nil, s.(*services.UserService)}, nil
+func InitLoginAction() *LoginAction {
+	return &LoginAction{}
+}
+
+func (a *LoginAction) SetService(s services.Service) error {
+	_, ok := s.(*services.ReportService)
+	_, ok2 := s.(*services.UserService)
+	if !(ok || ok2) {
+		return errors.New(fmt.Sprintf("Invalid type: %T", s))
+	} else if ok {
+		a.report = s.(*services.ReportService)
+	} else if ok2 {
+		a.user = s.(*services.UserService)
 	}
-	return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
+	return nil
 }
 
 // TODO Check Admin Login

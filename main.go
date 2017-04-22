@@ -46,6 +46,13 @@ func main() {
 		return nil
 	}
 
+	setServiceToAction := func(s services.Service, a actions.Action) error {
+		if err := a.SetService(s); err != nil {
+			return err
+		}
+		return nil
+	}
+
 	app := cli.NewApp()
 	app.Name = "gsuite"
 	app.Usage = "help managing gsuite"
@@ -67,17 +74,17 @@ func main() {
 			Usage: "Audit and manage groups within GSuite",
 			Before: func(context *cli.Context) error {
 				s = services.InitGroupService()
-				return s.SetClient(gsuiteClient)
+				if err = s.SetClient(gsuiteClient); err != nil {
+					return nil
+				}
+				a = actions.InitGroupAction()
+				return setServiceToAction(s, a)
 			},
 			Action: showHelpFunc,
 			Subcommands: []cli.Command {
 				{
 					Name: "list", Usage: "list existing groups",
 					Action: func(context *cli.Context) error {
-						a = actions.InitGroupAction()
-						if err := a.SetService(s); err != nil {
-							return err
-						}
 						return nil
 					},
 				},
@@ -88,18 +95,18 @@ func main() {
 			Usage: "Audit files within Google Drive",
 			Before: func(*cli.Context) error {
 				s = services.InitDriveService()
-				return s.SetClient(gsuiteClient)
+				if err = s.SetClient(gsuiteClient); err != nil {
+					return nil
+				}
+				a = actions.InitDriveAction()
+				return setServiceToAction(s, a)
 			},
 			Action: showHelpFunc,
 			Subcommands: []cli.Command{
 				{
 					Name: "list", Usage: "list existing files",
 					Action: func(context *cli.Context) error {
-						a = actions.InitDriveAction()
-						if err := a.SetService(s); err != nil {
-							return err
-						}
-						return nil
+						return a.(actions.DriveAction).SearchAllFolders()
 					},
 				},
 				{
@@ -107,10 +114,6 @@ func main() {
 					Action: func(context *cli.Context) error {
 						if context.NArg() != 1 {
 							return errors.New("Number of keyword must be exactly 1")
-						}
-						a = actions.InitDriveAction()
-						if err := a.SetService(s); err != nil {
-							return err
 						}
 						return a.(actions.DriveAction).SearchFoldersByName(context.Args()[0])
 					},
@@ -120,52 +123,51 @@ func main() {
 		{
 			Name: CommandLogin, Category: CommandLogin, Usage: "Gain insights on content management with Google Drive activity reports. Audit administrator actions. Generate customer and user usage reports.",
 			Before: func(*cli.Context) error {
+				a = actions.InitLoginAction()
 				s = services.InitReportService()
-				err := s.SetClient(gsuiteClient)
-				return err
+				if err = s.SetClient(gsuiteClient); err != nil {
+					return nil
+				}
+				s1 := services.InitUserService()
+				if err = s1.SetClient(gsuiteClient); err != nil {
+					return nil
+				}
+
+				if err = setServiceToAction(s, a); err != nil {
+					return err
+				}
+
+				if err = setServiceToAction(s1, a); err != nil {
+					return err
+				}
+				return nil
 			},
 			Action: showHelpFunc,
 			Subcommands: []cli.Command{
 				{
-					Name:  "rare-login", Usage: "get employees who have not logged in for a while",
-					Before: func(*cli.Context) error {
-						s = services.InitUserService()
-						err := s.SetClient(gsuiteClient)
-						return err
-					},
-					Action: func(context *cli.Context) error {
-						action, err := actions.NewReportAction(s)
-						if err != nil {
-							return err
-						}
-						return action.GetUsersWithRareLogin(14, tomlConf.Owner.DomainName)
-					},
-				},
-				{
 					// TODO probably account command?
 					Name:  "non2sv", Usage: "get employees who have not enabled 2sv",
 					Action: func(context *cli.Context) error {
-						action, err := actions.NewReportAction(s)
-						if err != nil {
-							return err
-						}
-						return action.GetNon2StepVerifiedUsers()
+						return a.(actions.LoginAction).GetNon2StepVerifiedUsers()
 					},
 				},
 				{
 					Name:  "suspicious_login", Usage: "get employees who have not been office for 30 days, but accessing",
 					Action: func(c *cli.Context) error {
-						action, err := actions.NewReportAction(s)
+						activities, err := a.(actions.LoginAction).GetAllLoginActivities(45)
 						if err != nil {
 							return err
 						}
-						activities, err := action.GetAllLoginActivities(45)
-						if err != nil {
-							return err
-						}
-						return action.GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
+						return a.(actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
 					},
 				},
+				{
+					Name:  "rare-login", Usage: "get employees who have not logged in for a while",
+					Action: func(context *cli.Context) error {
+						return a.(actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.DomainName)
+					},
+				},
+
 			},
 		},
 	}
