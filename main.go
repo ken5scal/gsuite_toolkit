@@ -93,6 +93,22 @@ func main() {
 						return action.(*actions.AuditAction).GetAllGrantedPrivilegesUsersInLastMonth()
 					},
 				},
+				{
+					Name:  "suspicious-login", Usage: "get employees who have not been office for 30 days, but accessing",
+					Action: func(c *cli.Context) error {
+						activities, err := action.(*actions.LoginAction).GetAllLoginActivities(45)
+						if err != nil {
+							return err
+						}
+						return action.(*actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
+					},
+				},
+				{
+					Name:  "rare-login", Usage: "get employees who have not logged in for action while",
+					Action: func(context *cli.Context) error {
+						return action.(*actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.Domain)
+					},
+				},
 			},
 		},
 		{
@@ -208,23 +224,6 @@ func main() {
 						return action.(*actions.LoginAction).GetNon2StepVerifiedUsers()
 					},
 				},
-				{
-					Name:  "suspicious-login", Usage: "get employees who have not been office for 30 days, but accessing",
-					Action: func(c *cli.Context) error {
-						activities, err := action.(*actions.LoginAction).GetAllLoginActivities(45)
-						if err != nil {
-							return err
-						}
-						return action.(*actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
-					},
-				},
-				{
-					Name:  "rare-login", Usage: "get employees who have not logged in for action while",
-					Action: func(context *cli.Context) error {
-						return action.(*actions.LoginAction).GetUsersWithRareLogin(14, tomlConf.Owner.Domain)
-					},
-				},
-
 			},
 		},
 	}
