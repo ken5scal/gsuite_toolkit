@@ -10,7 +10,7 @@ import (
 
 // AuditAction
 type AuditAction struct {
-	*services.AuditService
+	*services.AuditActivitiesService
 }
 
 // InitGroupAction initializes Audit Action
@@ -20,17 +20,17 @@ func InitAuditAction() *AuditAction {
 
 // SetService sets service in Action.
 func (action *AuditAction) SetService(s services.Service) error {
-	if _, ok := s.(*services.AuditService); !ok {
+	if _, ok := s.(*services.AuditActivitiesService); !ok {
 		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	}
-	action.AuditService = s.(*services.AuditService)
+	action.AuditActivitiesService = s.(*services.AuditActivitiesService)
 	return nil
 }
 
 // GetCreatedUserInLastMonth
 func (action AuditAction) GetCreatedUserInLastMonth() error {
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
-	if g, err := action.AuditService.GetUserCreatedEvents(firstDayOfLastMonth); err != nil {
+	if g, err := action.AuditActivitiesService.GetUserCreatedEvents(firstDayOfLastMonth); err != nil {
 		return err
 	} else {
 		// TODO, Wow this nest seems so unnecessary...
@@ -48,8 +48,8 @@ func (action AuditAction) GetCreatedUserInLastMonth() error {
 
 func (action AuditAction) GetAllGrantedPrivilegesUsersInLastMonth() error {
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
-	activities, err := action.AuditService.GetPrivilegeGrantedEvents(firstDayOfLastMonth)
-	activities2, err2 := action.AuditService.GetDelegatedPrivilegeGrantedEvents(firstDayOfLastMonth)
+	activities, err := action.AuditActivitiesService.GetPrivilegeGrantedEvents(firstDayOfLastMonth)
+	activities2, err2 := action.AuditActivitiesService.GetDelegatedPrivilegeGrantedEvents(firstDayOfLastMonth)
 	if err != nil  {
 		return err
 	} else if err2 !=nil {

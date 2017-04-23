@@ -8,8 +8,8 @@ import (
 )
 
 type LoginAction struct {
-	report *services.AuditService
-	user *services.UserService
+	activity *services.AuditActivitiesService
+	user     *services.UserService
 }
 
 func InitLoginAction() *LoginAction {
@@ -17,12 +17,12 @@ func InitLoginAction() *LoginAction {
 }
 
 func (action *LoginAction) SetService(s services.Service) error {
-	_, ok := s.(*services.AuditService)
+	_, ok := s.(*services.AuditActivitiesService)
 	_, ok2 := s.(*services.UserService)
 	if !(ok || ok2) {
 		return errors.New(fmt.Sprintf("Invalid type: %T", s))
 	} else if ok {
-		action.report = s.(*services.AuditService)
+		action.activity = s.(*services.AuditActivitiesService)
 	} else if ok2 {
 		action.user = s.(*services.UserService)
 	}
@@ -48,7 +48,7 @@ func (action LoginAction) GetAllAdminUsers(domain string) error {
 }
 
 func (action LoginAction) GetNon2StepVerifiedUsers() error {
-	report, err := action.report.Get2StepVerifiedStatusReport()
+	report, err := action.activity.Get2StepVerifiedStatusReport()
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (action LoginAction) GetNon2StepVerifiedUsers() error {
 }
 
 func (action LoginAction) GetAllLoginActivities(daysAgo int) ([]*admin.Activity, error) {
-	activities, err := action.report.GetLoginActivities(daysAgo)
+	activities, err := action.activity.GetLoginActivities(daysAgo)
 	if err != nil {
 		return nil, err
 	}
