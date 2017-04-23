@@ -119,7 +119,7 @@ func (s *AuditService) GetUserCreatedEvents(d RequestAuditDuration) ([]*admin.Ac
 	return fetchActivities(call)
 }
 
-func (s *AuditService) GetPriviledgeGrantingEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+func (s *AuditService) GetPrivilegeGrantingEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
 	now := time.Now()
 	switch d {
 	case This_Week:
