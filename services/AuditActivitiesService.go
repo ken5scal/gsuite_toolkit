@@ -101,10 +101,20 @@ func (s *AuditService) GetUserCreatedEvents(t time.Time) ([]*admin.Activity, err
 	return fetchActivities(call)
 }
 
+// GetPrivilegeGrantedEvents lists events in which Admin priviledge is granted
 func (s *AuditService) GetPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("GRANT_ADMIN_PRIVILEGE").
+		StartTime(t.Format(time.RFC3339))
+
+	return fetchActivities(call)
+}
+
+func (s *AuditService) GetDelegatedPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
+	call := s.ActivitiesService.
+		List("all", "admin").
+		EventName("GRANT_DELEGATED_ADMIN_PRIVILEGES").
 		StartTime(t.Format(time.RFC3339))
 
 	return fetchActivities(call)
