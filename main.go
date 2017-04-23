@@ -87,6 +87,12 @@ func main() {
 						return action.(*actions.AuditAction).GetCreatedUserInLastMonth()
 					},
 				},
+				{
+					Name: "privileges_granted",
+					Action: func(context *cli.Context) error {
+						return action.(*actions.AuditAction).GetAllGrantedPrivilegesUsersInLastMonth()
+					},
+				},
 			},
 		},
 		{
