@@ -5,6 +5,8 @@ import (
 	"errors"
 	"google.golang.org/api/admin/reports/v1"
 	"github.com/ken5scal/gsuite_toolkit/services"
+	"github.com/ken5scal/gsuite_toolkit/utilities"
+	"time"
 )
 
 type LoginAction struct {
@@ -110,7 +112,8 @@ func  (action LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error
 		return err
 	}
 
-	suspiciousActivitiesJudgedByGoogle, err :=  action.activity.GetSuspiciousLogins()
+	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
+	suspiciousActivitiesJudgedByGoogle, err :=  action.activity.GetSuspiciousLogins(firstDayOfLastMonth)
 	if err != nil {
 		return err
 	}
