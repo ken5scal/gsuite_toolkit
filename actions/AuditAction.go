@@ -48,8 +48,8 @@ func (action AuditAction) GetCreatedUserInLastMonth() error {
 
 func (action AuditAction) GetAllGrantedPrivilegesUsersInLastMonth() error {
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
-	activities, err := action.AuditService.GetPrivilegeGrantedEvents(firstDayOfLastMonth);
-	activities2, err2 := action.AuditService.GetPrivilegeGrantedEvents(firstDayOfLastMonth);
+	activities, err := action.AuditService.GetPrivilegeGrantedEvents(firstDayOfLastMonth)
+	activities2, err2 := action.AuditService.GetDelegatedPrivilegeGrantedEvents(firstDayOfLastMonth)
 	if err != nil  {
 		return err
 	} else if err2 !=nil {
