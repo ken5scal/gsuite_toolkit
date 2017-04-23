@@ -116,19 +116,7 @@ func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.A
 		// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
 		StartTime(now.Format(time.RFC3339))
 
-	// ToDO: I want to make this common
-	var activities []*admin.Activity
-	for {
-		if g, e := call.Do(); e != nil {
-			return nil, e
-		} else {
-			activities = append(activities, g.Items...)
-			if g.NextPageToken == "" {
-				return activities, nil
-			}
-			call.PageToken(g.NextPageToken)
-		}
-	}
+	return fetchActivities(call)
 }
 
 // GetUserUsage returns G Suite service activities across your account's Users
@@ -178,7 +166,10 @@ func (s *AuditService) GetLoginActivities(daysAgo int) ([]*admin.Activity, error
 		EventName("login_success").
 		StartTime(time30DaysAgo.Format(time.RFC3339))
 
-	// ToDO: I want to make this common
+	return fetchActivities(call)
+}
+
+func fetchActivities(call *admin.ActivitiesListCall) ([]*admin.Activity, error) {
 	var activities []*admin.Activity
 	for {
 		if g, e := call.Do(); e != nil {
