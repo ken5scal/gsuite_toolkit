@@ -96,11 +96,7 @@ func main() {
 				{
 					Name:  "suspicious-login", Usage: "get employees who have not been office for 30 days, but accessing",
 					Action: func(c *cli.Context) error {
-						activities, err := action.(*actions.LoginAction).GetAllLoginActivities(45)
-						if err != nil {
-							return err
-						}
-						return action.(*actions.LoginAction).GetIllegalLoginUsersAndIp(activities, tomlConf.GetAllIps())
+						return action.(*actions.LoginAction).GetIllegalLoginUsersAndIp2(tomlConf.GetAllIps())
 					},
 				},
 				{
