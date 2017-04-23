@@ -21,18 +21,18 @@ import (
 	  2: Input parameters
 	        * userkey: all
 	        * applicationName: admin
-	        * eventName: CREATE_USER
-	        * filters: USER_EMAIL==hoge@yourdomain.com
+	        * eventName: CREATE_USER(case sensitive)
+	        * filters: USER_EMAIL==hoge@yourdomain.com(case sensitive)
 	        * startTime: 2017-04-01T00:00:00.000Z
  */
 
-// AuditService provides following functions.
+// AuditActivitiesService provides following functions.
 // Content management with Google Drive activity reports.
 // Audit administrator actions.
 // Generate customer and user usage reports.
 // Details are available in a following link
 // https://developers.google.com/admin-sdk/reports/
-type AuditService struct {
+type AuditActivitiesService struct {
 	*admin.UserUsageReportService
 	*admin.ActivitiesService
 	*admin.ChannelsService
@@ -40,13 +40,13 @@ type AuditService struct {
 	*http.Client
 }
 
-// Initialize AuditService
-func InitAuditService() (s *AuditService) {
-	return &AuditService{}
+// Initialize AuditActivitiesService
+func InitAuditService() (s *AuditActivitiesService) {
+	return &AuditActivitiesService{}
 }
 
 // SetClient creates instance of Report related Services
-func (s *AuditService) SetClient(client *http.Client) (error) {
+func (s *AuditActivitiesService) SetClient(client *http.Client) (error) {
 	srv, err := admin.New(client)
 	if err != nil {
 		return err
@@ -70,13 +70,13 @@ func (s *AuditService) SetClient(client *http.Client) (error) {
 //      choose from https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1#login
 // filters: ex) login_type==google_password, login_failure_type<> login_failure_unknown
 //      choose from https://developers.google.com/admin-sdk/reports/v1/appendix/activity/login?authuser=1#login
-func (s *AuditService) getWhatever() {
+func (s *AuditActivitiesService) getWhatever() {
 
 }
 
 // getAllActivities: Get All Admin Activities
 // https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
-func (s *AuditService) getAllActivities() {
+func (s *AuditActivitiesService) getAllActivities() {
 	s.ActivitiesService.List("all", "admin")
 }
 
@@ -91,32 +91,32 @@ func (s *AuditService) getAllActivities() {
 
 // GetUserCreatedEvents lists user creation events
 // Weekly, Monthly...
-func (s *AuditService) GetUserCreatedEvents(t time.Time) ([]*admin.Activity, error) {
+func (s *AuditActivitiesService) GetUserCreatedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("CREATE_USER").
 		StartTime(t.Format(time.RFC3339)) // RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
 
-	return fetchActivities(call)
+	return fetchAllActivities(call)
 }
 
 // GetPrivilegeGrantedEvents lists events in which Admin priviledge is granted
-func (s *AuditService) GetPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
+func (s *AuditActivitiesService) GetPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("GRANT_ADMIN_PRIVILEGE").
 		StartTime(t.Format(time.RFC3339)) // RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
 
-	return fetchActivities(call)
+	return fetchAllActivities(call)
 }
 
-func (s *AuditService) GetDelegatedPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
+func (s *AuditActivitiesService) GetDelegatedPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("GRANT_DELEGATED_ADMIN_PRIVILEGES").
 		StartTime(t.Format(time.RFC3339))
 
-	return fetchActivities(call)
+	return fetchAllActivities(call)
 }
 
 // GetUserUsage returns G Suite service activities across your account's Users
@@ -124,7 +124,7 @@ func (s *AuditService) GetDelegatedPrivilegeGrantedEvents(t time.Time) ([]*admin
 // params should be one or combination of user report parameters
 // https://developers.google.com/admin-sdk/reports/v1/guides/manage-usage-users
 // Example:GetUserUsage("all", "2017-01-01", "accounts:is_2sv_enrolled,"accounts:last_name"")
-func (s *AuditService) GetUserUsage(key, date, params string) (*admin.UsageReports, error) {
+func (s *AuditActivitiesService) GetUserUsage(key, date, params string) (*admin.UsageReports, error) {
 	return s.UserUsageReportService.
 		Get(key, date).
 		Parameters(params).
@@ -135,7 +135,7 @@ func (s *AuditService) GetUserUsage(key, date, params string) (*admin.UsageRepor
 // date Must be in ISO 8601 format, yyyy-mm-dd
 // https://developers.google.com/admin-sdk/reports/v1/guides/manage-usage-users
 // Example: Get2StepVerifiedStatusReport("2017-01-01")
-func (s *AuditService) Get2StepVerifiedStatusReport() (*admin.UsageReports, error) {
+func (s *AuditActivitiesService) Get2StepVerifiedStatusReport() (*admin.UsageReports, error) {
 	var usageReports *admin.UsageReports
 	var err error
 	max_retry := 10
@@ -159,17 +159,30 @@ func (s *AuditService) Get2StepVerifiedStatusReport() (*admin.UsageReports, erro
 // GetLoginActivities reports login activities of all Users within organization
 // daysAgo: number of past days you are interested from present time
 // EX: GetLoginActivities(30)
-func (s *AuditService) GetLoginActivities(daysAgo int) ([]*admin.Activity, error) {
+func (s *AuditActivitiesService) GetLoginActivities(daysAgo int) ([]*admin.Activity, error) {
 	time30DaysAgo := time.Now().Add(-time.Duration(daysAgo) * time.Hour * 24)
 	call := s.ActivitiesService.
 		List("all", "login").
 		EventName("login_success").
 		StartTime(time30DaysAgo.Format(time.RFC3339))
 
-	return fetchActivities(call)
+	return fetchAllActivities(call)
 }
 
-func fetchActivities(call *admin.ActivitiesListCall) ([]*admin.Activity, error) {
+// SuspiciousLogins reports successful, but suspicious login (judged by google)
+// Suspicious -> The login attempt had some unusual characteristics, for example the user logged in from an unfamiliar IP address
+func (s *AuditActivitiesService) GetSuspiciousLogins() ([]*admin.Activity, error) {
+	call := s.ActivitiesService.
+		List("all", "login").
+		EventName("login_success").
+		Filters("is_suspicious==true").
+		StartTime()
+
+	return fetchAllActivities(call)
+}
+
+// fetchAllActivities fetches all activities until NextPageToken gets empty.
+func fetchAllActivities(call *admin.ActivitiesListCall) ([]*admin.Activity, error) {
 	var activities []*admin.Activity
 	for {
 		if g, e := call.Do(); e != nil {
