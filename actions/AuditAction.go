@@ -45,3 +45,20 @@ func (action AuditAction) GetCreatedUserInLastMonth() error {
 		return nil
 	}
 }
+
+func (action AuditAction) GetAllGrantedPrivilegesUsersInLastMonth() error {
+	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
+	if activities, err := action.AuditService.GetPrivilegeGrantedEvents(firstDayOfLastMonth); err != nil {
+		return err
+	} else {
+		for _, activity := range activities {
+			fmt.Println(activity.Actor)
+			for _, event := range activity.Events {
+				for _, parameter := range event.Parameters {
+					fmt.Println(parameter.Value)
+				}
+			}
+		}
+		return nil
+	}
+}
