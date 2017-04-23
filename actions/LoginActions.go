@@ -96,6 +96,59 @@ func (action LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error 
 	return nil
 }
 
+func  (action LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error {
+	// ToDo Make this chan
+	// Wow this really needs to be Chan
+
+	activities, err := action.activity.GetLoginActivities(45)
+	if err != nil {
+		return err
+	}
+
+	filteredActivities := getIllegalLoginUsersAndIHogep2(activities, officeIPs)
+	if err != nil {
+		return err
+	}
+
+	suspiciousActivitiesJudgedByGoogle, err :=  action.activity.GetSuspiciousLogins()
+	if err != nil {
+		return err
+	}
+
+	suspiciousActivitiesJudgedByGoogle = append(suspiciousActivitiesJudgedByGoogle, filteredActivities...)
+	for _, activity := range suspiciousActivitiesJudgedByGoogle {
+		fmt.Println(activity.Actor.Email)
+	}
+	return nil
+}
+
+// GetIllegalLoginUsersAndIp
+// Main purpose is to detect employees who have not logged in from office for 30days
+func getIllegalLoginUsersAndIHogep2(activities []*admin.Activity, officeIPs []string) []*admin.Activity {
+	data := make(map[*admin.Activity]*LoginInformation)
+	for _, activity := range activities {
+		ip := activity.IpAddress
+		if value, ok := data[activity]; ok {
+			if !value.OfficeLogin {
+				// If an user has logged in from not verified IP so far
+				// then check if new IP is the one from office or not.
+				value.OfficeLogin = containIP(officeIPs, ip)
+			}
+			value.LoginIPs = append(value.LoginIPs, ip)
+		} else {
+			data[activity] = &LoginInformation{
+				activity.Actor.Email,
+				containIP(officeIPs, ip),
+				[]string{ip}}
+		}
+	}
+	as := make([]*admin.Activity, 0, len(data))
+	for ac := range data {
+		as = append(as, ac)
+	}
+	return as
+}
+
 // GetIllegalLoginUsersAndIp
 // Main purpose is to detect employees who have not logged in from office for 30days
 func  (action LoginAction)  GetIllegalLoginUsersAndIp(activities []*admin.Activity, officeIPs []string) error {
