@@ -7,6 +7,7 @@ import (
 	"github.com/ken5scal/gsuite_toolkit/services"
 	"github.com/ken5scal/gsuite_toolkit/utilities"
 	"time"
+	"github.com/asaskevich/govalidator"
 )
 
 type LoginAction struct {
@@ -101,6 +102,11 @@ func (action LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error 
 func  (action LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error {
 	// ToDo Make this chan
 	// Wow this really needs to be Chan
+	for _, ip := range officeIPs {
+		if !govalidator.IsIPv4(ip) {
+			return errors.New(fmt.Sprintf("%v is not in IPv4 format", ip))
+		}
+	}
 
 	activities, err := action.activity.GetLoginActivities(45)
 	if err != nil {
