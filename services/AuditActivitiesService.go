@@ -95,8 +95,7 @@ func (s *AuditService) GetUserCreatedEvents(t time.Time) ([]*admin.Activity, err
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("CREATE_USER").
-		// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
-		StartTime(t.Format(time.RFC3339))
+		StartTime(t.Format(time.RFC3339)) // RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
 
 	return fetchActivities(call)
 }
@@ -106,7 +105,7 @@ func (s *AuditService) GetPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("GRANT_ADMIN_PRIVILEGE").
-		StartTime(t.Format(time.RFC3339))
+		StartTime(t.Format(time.RFC3339)) // RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
 
 	return fetchActivities(call)
 }
