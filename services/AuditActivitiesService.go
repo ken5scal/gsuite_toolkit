@@ -90,9 +90,9 @@ const (
 	Half_Year // This is the maximum duration GSuite can pull off: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
 )
 
-// ListUserCreatedEvents
+// GetUserCreatedEvents lists user creation events
 // Weekly, Monthly...
-func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+func (s *AuditService) GetUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
 	now := time.Now()
 	switch d {
 	case This_Week:
@@ -114,6 +114,32 @@ func (s *AuditService) ListUserCreatedEvents(d RequestAuditDuration) ([]*admin.A
 		List("all", "admin").
 		EventName("CREATE_USER").
 		// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
+		StartTime(now.Format(time.RFC3339))
+
+	return fetchActivities(call)
+}
+
+func (s *AuditService) GetPriviledgeGrantingEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+	now := time.Now()
+	switch d {
+	case This_Week:
+		fmt.Println("this_week")
+		for now.Weekday() != time.Monday {
+			now = now.AddDate(0, 0, -1)
+		}
+	case This_Month:
+		now = now.AddDate(0, 0, -(now.Day() - 1))
+	case Last_Month:
+		now = now.AddDate(0, -1, -(now.Day() - 1))
+	case Last_Three_Month:
+		now = now.AddDate(0, -3, -(now.Day() - 1))
+	case Half_Year:
+		now = now.AddDate(0, -6, -(now.Day() - 1))
+	}
+
+	call := s.ActivitiesService.
+		List("all", "admin").
+		EventName("GRANT_ADMIN_PRIVILEGE").
 		StartTime(now.Format(time.RFC3339))
 
 	return fetchActivities(call)
