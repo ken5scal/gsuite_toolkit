@@ -96,6 +96,19 @@ func main() {
 				{
 					Name:  "suspicious-login", Usage: "get employees who have not been office for 30 days, but accessing",
 					Action: func(c *cli.Context) error {
+						// TODO THis is Bad
+						// Todo should check which service is set?
+						action = actions.InitLoginAction()
+						if err != setServiceToAction(service, action) {
+							return err
+						}
+						s := services.InitUserService()
+						if err = s.SetClient(gsuiteClient); err != nil {
+							return nil
+						}
+						if err != setServiceToAction(s, action) {
+							return err
+						}
 						return action.(*actions.LoginAction).GetIllegalLoginUsersAndIp2(tomlConf.GetAllIps())
 					},
 				},

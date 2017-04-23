@@ -88,7 +88,7 @@ func (action LoginAction) GetAllLoginActivities(daysAgo int) ([]*admin.Activity,
 	return activities, nil
 }
 
-func (action LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error {
+func (action *LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error {
 	r, err := action.user.GetUsersWithRareLogin(daysAgo, name)
 	if err != nil {
 		return err
@@ -99,7 +99,8 @@ func (action LoginAction) GetUsersWithRareLogin(daysAgo int, name string) error 
 	return nil
 }
 
-func  (action LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error {
+func  (action *LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error {
+	// Todo this is bad
 	// ToDo Make this chan
 	// Wow this really needs to be Chan
 	for _, ip := range officeIPs {
@@ -124,10 +125,12 @@ func  (action LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) error
 		return err
 	}
 
+
+	// ToDO Check if there is duplicates.
 	suspiciousActivitiesJudgedByGoogle = append(suspiciousActivitiesJudgedByGoogle, filteredActivities...)
-	for _, activity := range suspiciousActivitiesJudgedByGoogle {
-		fmt.Println(activity.Actor.Email)
-	}
+	//for _, activity := range filteredActivities {
+	//	fmt.Println(activity.Actor.Email)
+	//}
 	return nil
 }
 
@@ -152,8 +155,15 @@ func getIllegalLoginUsersAndIHogep2(activities []*admin.Activity, officeIPs []st
 		}
 	}
 	as := make([]*admin.Activity, 0, len(data))
-	for ac := range data {
-		as = append(as, ac)
+	//for ac := range data {
+	//	as = append(as, ac)
+	//}
+	for key, value := range data {
+		if !value.OfficeLogin {
+			fmt.Println(key)
+			fmt.Print("     IP: ")
+			fmt.Println(value.LoginIPs)
+		}
 	}
 	return as
 }

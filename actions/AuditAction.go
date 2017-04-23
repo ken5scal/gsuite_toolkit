@@ -28,7 +28,7 @@ func (action *AuditAction) SetService(s services.Service) error {
 }
 
 // GetCreatedUserInLastMonth
-func (action AuditAction) GetCreatedUserInLastMonth() error {
+func (action *AuditAction) GetCreatedUserInLastMonth() error {
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
 	if g, err := action.AuditActivitiesService.GetUserCreatedEvents(firstDayOfLastMonth); err != nil {
 		return err
@@ -46,7 +46,7 @@ func (action AuditAction) GetCreatedUserInLastMonth() error {
 	}
 }
 
-func (action AuditAction) GetAllGrantedPrivilegesUsersInLastMonth() error {
+func (action *AuditAction) GetAllGrantedPrivilegesUsersInLastMonth() error {
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
 	activities, err := action.AuditActivitiesService.GetPrivilegeGrantedEvents(firstDayOfLastMonth)
 	activities2, err2 := action.AuditActivitiesService.GetDelegatedPrivilegeGrantedEvents(firstDayOfLastMonth)
