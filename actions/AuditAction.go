@@ -4,6 +4,8 @@ import (
 	"github.com/ken5scal/gsuite_toolkit/services"
 	"errors"
 	"fmt"
+	"github.com/ken5scal/gsuite_toolkit/utilities"
+	"time"
 )
 
 // AuditAction
@@ -25,8 +27,10 @@ func (action *AuditAction) SetService(s services.Service) error {
 	return nil
 }
 
+// GetCreatedUserInLastMonth
 func (action AuditAction) GetCreatedUserInLastMonth() error {
-	if g, err := action.AuditService.GetUserCreatedEvents(services.Last_Month); err != nil {
+	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
+	if g, err := action.AuditService.GetUserCreatedEvents(firstDayOfLastMonth); err != nil {
 		return err
 	} else {
 		// TODO, Wow this nest seems so unnecessary...

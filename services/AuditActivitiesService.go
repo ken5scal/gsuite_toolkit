@@ -6,7 +6,6 @@ import (
 	"time"
 	"strings"
 	"google.golang.org/api/googleapi"
-	"fmt"
 )
 
 /*
@@ -81,66 +80,32 @@ func (s *AuditService) getAllActivities() {
 	s.ActivitiesService.List("all", "admin")
 }
 
-type RequestAuditDuration int
-const (
-	This_Week RequestAuditDuration = iota
-	This_Month
-	Last_Month
-	Last_Three_Month
-	Half_Year // This is the maximum duration GSuite can pull off: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
-)
+//type RequestAuditDuration int
+//const (
+//	This_Week RequestAuditDuration = iota
+//	This_Month
+//	Last_Month
+//	Last_Three_Month
+//	Half_Year // This is the maximum duration GSuite can pull off: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
+//)
 
 // GetUserCreatedEvents lists user creation events
 // Weekly, Monthly...
-func (s *AuditService) GetUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
-	now := time.Now()
-	switch d {
-	case This_Week:
-		fmt.Println("this_week")
-		for now.Weekday() != time.Monday {
-			now = now.AddDate(0, 0, -1)
-		}
-	case This_Month:
-		now = now.AddDate(0, 0, -(now.Day() - 1))
-	case Last_Month:
-		now = now.AddDate(0, -1, -(now.Day() - 1))
-	case Last_Three_Month:
-		now = now.AddDate(0, -3, -(now.Day() - 1))
-	case Half_Year:
-		now = now.AddDate(0, -6, -(now.Day() - 1))
-	}
-
+func (s *AuditService) GetUserCreatedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("CREATE_USER").
 		// RFC 3339 format: ex: 2010-10-28T10:26:35.000Z
-		StartTime(now.Format(time.RFC3339))
+		StartTime(t.Format(time.RFC3339))
 
 	return fetchActivities(call)
 }
 
-func (s *AuditService) GetPrivilegeGrantedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
-	now := time.Now()
-	switch d {
-	case This_Week:
-		fmt.Println("this_week")
-		for now.Weekday() != time.Monday {
-			now = now.AddDate(0, 0, -1)
-		}
-	case This_Month:
-		now = now.AddDate(0, 0, -(now.Day() - 1))
-	case Last_Month:
-		now = now.AddDate(0, -1, -(now.Day() - 1))
-	case Last_Three_Month:
-		now = now.AddDate(0, -3, -(now.Day() - 1))
-	case Half_Year:
-		now = now.AddDate(0, -6, -(now.Day() - 1))
-	}
-
+func (s *AuditService) GetPrivilegeGrantedEvents(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "admin").
 		EventName("GRANT_ADMIN_PRIVILEGE").
-		StartTime(now.Format(time.RFC3339))
+		StartTime(t.Format(time.RFC3339))
 
 	return fetchActivities(call)
 }
