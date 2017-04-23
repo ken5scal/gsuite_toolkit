@@ -90,9 +90,9 @@ const (
 	Half_Year // This is the maximum duration GSuite can pull off: https://developers.google.com/admin-sdk/reports/v1/reference/activities/list?authuser=1
 )
 
-// GetUserCreatingEvents lists user creation events
+// GetUserCreatedEvents lists user creation events
 // Weekly, Monthly...
-func (s *AuditService) GetUserCreatingEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+func (s *AuditService) GetUserCreatedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
 	now := time.Now()
 	switch d {
 	case This_Week:
@@ -119,7 +119,7 @@ func (s *AuditService) GetUserCreatingEvents(d RequestAuditDuration) ([]*admin.A
 	return fetchActivities(call)
 }
 
-func (s *AuditService) GetPrivilegeGrantingEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
+func (s *AuditService) GetPrivilegeGrantedEvents(d RequestAuditDuration) ([]*admin.Activity, error) {
 	now := time.Now()
 	switch d {
 	case This_Week:

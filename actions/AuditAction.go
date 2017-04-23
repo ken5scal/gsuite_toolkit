@@ -26,7 +26,7 @@ func (action *AuditAction) SetService(s services.Service) error {
 }
 
 func (action AuditAction) GetCreatedUserInLastMonth() error {
-	if g, err := action.AuditService.GetUserCreatingEvents(services.Last_Month); err != nil {
+	if g, err := action.AuditService.GetUserCreatedEvents(services.Last_Month); err != nil {
 		return err
 	} else {
 		// TODO, Wow this nest seems so unnecessary...
