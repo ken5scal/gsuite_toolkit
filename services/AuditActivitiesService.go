@@ -39,8 +39,6 @@ type AuditService struct {
 	*admin.ChannelsService
 	*admin.CustomerUsageReportsService
 	*http.Client
-	Call *admin.ActivitiesListCall
-	Activities []*admin.Activity
 }
 
 // Initialize AuditService
@@ -175,28 +173,22 @@ func (s *AuditService) Get2StepVerifiedStatusReport() (*admin.UsageReports, erro
 // EX: GetLoginActivities(30)
 func (s *AuditService) GetLoginActivities(daysAgo int) ([]*admin.Activity, error) {
 	time30DaysAgo := time.Now().Add(-time.Duration(daysAgo) * time.Hour * 24)
-	s.Call = s.ActivitiesService.
+	call := s.ActivitiesService.
 		List("all", "login").
 		EventName("login_success").
 		StartTime(time30DaysAgo.Format(time.RFC3339))
 
-	if e := s.RepeatCallerUntilNoPageToken(); e != nil {
-		return nil, e
-	}
-	return s.Activities, nil
-}
-
-func (s *AuditService) RepeatCallerUntilNoPageToken() error {
-	s.Activities =  []*admin.Activity{}
+	// ToDO: I want to make this common
+	var activities []*admin.Activity
 	for {
-		r, e := s.Call.Do()
-		if e != nil {
-			return e
+		if g, e := call.Do(); e != nil {
+			return nil, e
+		} else {
+			activities = append(activities, g.Items...)
+			if g.NextPageToken == "" {
+				return activities, nil
+			}
+			call.PageToken(g.NextPageToken)
 		}
-		s.Activities = append(s.Activities, r.Items...)
-		if r.NextPageToken == "" {
-			return nil
-		}
-		s.Call.PageToken(r.NextPageToken)
 	}
 }
