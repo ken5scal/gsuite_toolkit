@@ -46,6 +46,8 @@ func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error
 	return fetchAllUsers(call)
 }
 
+// GetSuspendedEmployees retrieves users who are suspended because one of following reason:
+// https://developers.google.com/admin-sdk/directory/v1/reference/users?authuser=1#resource
 func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
 		List().Domain(domain).OrderBy("email").
