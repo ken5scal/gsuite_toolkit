@@ -99,12 +99,18 @@ func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.U
 	return goneUsers, nil
 }
 
+// GetVerificationCodes returns verification code of user
 func (s *UserService) GetVerificationCodes(email string) ([]*admin.VerificationCode, error) {
 	vs,err := s.VerificationCodesService.List(email).Do()
 	if err != nil {
 		return nil, err
 	}
 	return vs.Items, nil
+}
+
+// InvalidateCodes invalidates all verification codes associated with email
+func (s *UserService) InvalidateCodes(email string) error {
+	return s.VerificationCodesService.Generate(email).Do()
 }
 
 // fetchAllUsers fetches all Users
