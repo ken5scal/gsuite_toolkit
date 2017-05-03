@@ -68,14 +68,14 @@ func (s *UserService) GetEmployees(domain string) ([]*admin.User, error) {
 // GetAllUsersInDomain retrieves all users in domain.
 // GET https://www.googleapis.com/admin/directory/v1/users?domain=example.com&maxResults=2
 // Example: GetAllUsersInDomain("hoge.co.jp", "[email, familyname, givenname]", 500)
-func (s *UserService) GetAllUsersInDomain(domain string, max int64) (*admin.Users, error) {
-	return s.UsersService.
-		List().
-		Domain(domain).
-		OrderBy("email").
-		MaxResults(max).
-		Do()
-}
+//func (s *UserService) GetAllUsersInDomain(domain string, max int64) (*admin.Users, error) {
+//	return s.UsersService.
+//		List().
+//		Domain(domain).
+//		OrderBy("email").
+//		MaxResults(max).
+//		Do()
+//}
 
 // GetUser retrieves a user based on either email or userID
 // GET https://www.googleapis.com/admin/directory/v1/users/userKey
@@ -94,7 +94,7 @@ func (s *UserService) ChangeOrgUnit(user *admin.User, unit string) (*admin.User,
 
 // GetUsersWithRareLogin detects who has not logged in recently.
 func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.User, error) {
-	users, err := s.GetAllUsersInDomain(domain, 500)
+	users, err := s.GetEmployees(domain)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.U
 	time30DaysAgo := time.Now().Add(-time.Duration(days) * time.Hour * 24)
 
 	var goneUsers []*admin.User
-	for _, user := range users.Users {
+	for _, user := range users {
 		lastLogin, err := time.Parse("2006-01-02T15:04:05.000Z", user.LastLoginTime)
 		if err != nil {
 			return nil, err
