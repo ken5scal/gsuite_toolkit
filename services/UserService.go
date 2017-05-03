@@ -157,3 +157,18 @@ func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.U
 
 	return goneUsers, nil
 }
+
+func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
+	var users []*admin.User
+	for {
+		if g, e := call.Do(); e != nil {
+			return nil, e
+		} else {
+			users = append(users, g.Users...)
+			if g.NextPageToken == "" {
+				return users, nil
+			}
+			call.PageToken(g.NextPageToken)
+		}
+	}
+}
