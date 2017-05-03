@@ -72,9 +72,12 @@ func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error
 	}
 }
 
+func (s *UserService) GetDeactivatedEmployees(domain string) ([]*admin.User, error) {}
+
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
 // max should be integer lower than 500
+// ToDo This should return []*admin.User instead of *admin.Users
 func (s *UserService) GetEmployees(customer, key string, max int64) (*admin.Users, error) {
 	return s.UsersService.
 		List().
