@@ -120,7 +120,7 @@ func  (action *LoginAction)  GetIllegalLoginUsersAndIp2(officeIPs []string) erro
 	}
 
 	firstDayOfLastMonth := utilities.Last_Month.ModifyDate(time.Now())
-	suspiciousActivitiesJudgedByGoogle, err :=  action.activity.GetSuspiciousLogins(firstDayOfLastMonth)
+	suspiciousActivitiesJudgedByGoogle, err :=  action.activity.GetSuspiciousLogIns(firstDayOfLastMonth)
 	if err != nil {
 		return err
 	}

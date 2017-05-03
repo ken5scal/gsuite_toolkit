@@ -171,7 +171,7 @@ func (s *AuditActivitiesService) GetLoginActivities(daysAgo int) ([]*admin.Activ
 
 // SuspiciousLogins reports successful, but suspicious login (judged by google)
 // Suspicious -> The login attempt had some unusual characteristics, for example the user logged in from an unfamiliar IP address
-func (s *AuditActivitiesService) GetSuspiciousLogins(t time.Time) ([]*admin.Activity, error) {
+func (s *AuditActivitiesService) GetSuspiciousLogIns(t time.Time) ([]*admin.Activity, error) {
 	call := s.ActivitiesService.
 		List("all", "login").
 		EventName("login_success").
