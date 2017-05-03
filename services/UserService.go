@@ -12,6 +12,7 @@ import (
 type UserService struct {
 	*admin.UsersService
 	*http.Client
+	listCall *admin.UsersListCall
 }
 
 // Initialize UserService
@@ -27,31 +28,26 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 	}
 	s.UsersService = srv.Users
 	s.Client = client
+	s.listCall = s.UsersService.List().OrderBy("email")
 	return nil
 }
 
 // GetAllAdmins return all Admins
 func (s *UserService) GetAllAdmins(domain string) ([]*admin.User, error) {
-	call := s.UsersService.
-		List().Domain(domain).OrderBy("email").
-		Query("isAdmin=true")
+	call := s.listCall.Domain(domain).Query("isAdmin=true")
 	return fetchAllUsers(call)
 }
 
 // GetAllAdmins return all Admins
 func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error) {
-	call := s.UsersService.
-		List().Domain(domain).OrderBy("email").
-		Query("isDelegatedAdmin=true")
+	call := s.listCall.Domain(domain).Query("isDelegatedAdmin=true")
 	return fetchAllUsers(call)
 }
 
 // GetSuspendedEmployees retrieves users who are suspended because one of following reason:
 // https://developers.google.com/admin-sdk/directory/v1/reference/users?authuser=1#resource
 func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error) {
-	call := s.UsersService.
-		List().Domain(domain).OrderBy("email").
-		Query("isSuspended=true")
+	call := s.listCall.Domain(domain).Query("isSuspended=true")
 	return fetchAllUsers(call)
 }
 
@@ -59,8 +55,7 @@ func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error
 // By Default customer key should be "my_customer"
 // max should be integer lower than 500
 func (s *UserService) GetEmployees(domain string) ([]*admin.User, error) {
-	call := s.UsersService.
-		List().Domain(domain).OrderBy("email")
+	call := s.listCall.Domain(domain)
 	return fetchAllUsers(call)
 }
 
