@@ -33,9 +33,7 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 // GetAllAdmins return all Admins
 func (s *UserService) GetAllAdmins(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
-		List().
-		Domain(domain).
-		OrderBy("email").
+		List().Domain(domain).OrderBy("email").
 		Query("isAdmin=true")
 	return fetchAllUsers(call)
 }
@@ -43,16 +41,15 @@ func (s *UserService) GetAllAdmins(domain string) ([]*admin.User, error) {
 // GetAllAdmins return all Admins
 func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
-		List().
-		Domain(domain).
-		OrderBy("email").
+		List().Domain(domain).OrderBy("email").
 		Query("isDelegatedAdmin=true")
 	return fetchAllUsers(call)
 }
 
 func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
-		List().Domain(domain).OrderBy("email").Query("isSuspended=true")
+		List().Domain(domain).OrderBy("email").
+		Query("isSuspended=true")
 	return fetchAllUsers(call)
 }
 
