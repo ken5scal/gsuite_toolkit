@@ -58,24 +58,11 @@ func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
 // max should be integer lower than 500
-// ToDo This should return []*admin.User instead of *admin.Users
 func (s *UserService) GetEmployees(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
 		List().Domain(domain).OrderBy("email")
 	return fetchAllUsers(call)
 }
-
-// GetAllUsersInDomain retrieves all users in domain.
-// GET https://www.googleapis.com/admin/directory/v1/users?domain=example.com&maxResults=2
-// Example: GetAllUsersInDomain("hoge.co.jp", "[email, familyname, givenname]", 500)
-//func (s *UserService) GetAllUsersInDomain(domain string, max int64) (*admin.Users, error) {
-//	return s.UsersService.
-//		List().
-//		Domain(domain).
-//		OrderBy("email").
-//		MaxResults(max).
-//		Do()
-//}
 
 // GetUser retrieves a user based on either email or userID
 // GET https://www.googleapis.com/admin/directory/v1/users/userKey
