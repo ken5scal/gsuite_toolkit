@@ -40,7 +40,7 @@
  - [x] isSuspicious
 - ファイル権限
 - ファイル共有設定
-- [ ] Json化
+- [ ] 出力のJson化
 
 # Command
 * MY_EXECUTABLE [optional flags] <group | commands>
