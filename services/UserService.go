@@ -76,7 +76,24 @@ func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error
 	}
 }
 
-func (s *UserService) GetDeactivatedEmployees(domain string) ([]*admin.User, error) {}
+func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error) {
+	call := s.UsersService.
+		List().Domain(domain).OrderBy("email").Query("isSuspended=true")
+	// ToDO: I want to make this common
+	var users []*admin.User
+	for {
+		if g, e := call.Do(); e != nil {
+			return nil, e
+		} else {
+
+			users = append(users, g.Users...)
+			if g.NextPageToken == "" {
+				return users, nil
+			}
+			call.PageToken(g.NextPageToken)
+		}
+	}
+}
 
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
