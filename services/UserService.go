@@ -37,20 +37,7 @@ func (s *UserService) GetAllAdmins(domain string) ([]*admin.User, error) {
 		Domain(domain).
 		OrderBy("email").
 		Query("isAdmin=true")
-	// ToDO: I want to make this common
-	var users []*admin.User
-	for {
-		if g, e := call.Do(); e != nil {
-			return nil, e
-		} else {
-
-			users = append(users, g.Users...)
-			if g.NextPageToken == "" {
-				return users, nil
-			}
-			call.PageToken(g.NextPageToken)
-		}
-	}
+	return fetchAllUsers(call)
 }
 
 // GetAllAdmins return all Admins
@@ -60,39 +47,13 @@ func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error
 		Domain(domain).
 		OrderBy("email").
 		Query("isDelegatedAdmin=true")
-	// ToDO: I want to make this common
-	var users []*admin.User
-	for {
-		if g, e := call.Do(); e != nil {
-			return nil, e
-		} else {
-
-			users = append(users, g.Users...)
-			if g.NextPageToken == "" {
-				return users, nil
-			}
-			call.PageToken(g.NextPageToken)
-		}
-	}
+	return fetchAllUsers(call)
 }
 
 func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error) {
 	call := s.UsersService.
 		List().Domain(domain).OrderBy("email").Query("isSuspended=true")
-	// ToDO: I want to make this common
-	var users []*admin.User
-	for {
-		if g, e := call.Do(); e != nil {
-			return nil, e
-		} else {
-
-			users = append(users, g.Users...)
-			if g.NextPageToken == "" {
-				return users, nil
-			}
-			call.PageToken(g.NextPageToken)
-		}
-	}
+	return fetchAllUsers(call)
 }
 
 // GetEmployees retrieves employees from Gsuite organization.
