@@ -51,30 +51,13 @@ func (action LoginAction) GetAllAdminUsers(domain string) error {
 }
 
 func (action LoginAction) GetNon2StepVerifiedUsers() error {
-	report, err := action.activity.Get2StepVerifiedStatusReport()
+	us, err := action.user.GetNon2SVEmployees("moneyforward.co.jp")
 	if err != nil {
 		return err
 	}
 
-	if len(report.UsageReports) == 0 {
-		return errors.New("No Report Available")
-	}
-
-	var paramIndex int
-	fmt.Println("Latest Report: " + report.UsageReports[0].Date)
-	for i, param := range report.UsageReports[0].Parameters {
-		// https://developers.google.com/admin-sdk/reports/v1/guides/manage-usage-users
-		// Parameters: https://developers.google.com/admin-sdk/reports/v1/reference/usage-ref-appendix-a/users-accounts
-		if param.Name == "accounts:is_2sv_enrolled" {
-			paramIndex = i
-			break
-		}
-	}
-
-	for _, r := range report.UsageReports {
-		if !r.Parameters[paramIndex].BoolValue {
-			fmt.Println(r.Entity.UserEmail)
-		}
+	for _, u := range us {
+		fmt.Println(u.PrimaryEmail)
 	}
 
 	return nil
