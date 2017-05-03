@@ -37,7 +37,7 @@
  - [ ] 作成
  - [ ] 通知   
 - 不正ログイン
- - [ ] isSuspicious
+ - [x] isSuspicious
 - ファイル権限
 - ファイル旧友設定
 
