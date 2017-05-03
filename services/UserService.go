@@ -53,6 +53,12 @@ func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error
 	return fetchAllUsers(call)
 }
 
+// GetNon2SVEmployees retrieves users who is not using 2sv for its login,
+func (s *UserService) GetNon2SVEmployees(domain string) ([]*admin.User, error) {
+	call := s.listCall.Domain(domain).Query("isEnforcedIn2Sv=false isEnrolledIn2Sv=false")
+	return fetchAllUsers(call)
+}
+
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
 // max should be integer lower than 500
