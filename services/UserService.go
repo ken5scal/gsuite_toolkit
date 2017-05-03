@@ -57,13 +57,10 @@ func (s *UserService) GetSuspendedEmployees(domain string) ([]*admin.User, error
 // By Default customer key should be "my_customer"
 // max should be integer lower than 500
 // ToDo This should return []*admin.User instead of *admin.Users
-func (s *UserService) GetEmployees(customer, key string, max int64) (*admin.Users, error) {
-	return s.UsersService.
-		List().
-		Customer(customer).
-		OrderBy(key).
-		MaxResults(max).
-		Do()
+func (s *UserService) GetEmployees(domain string) ([]*admin.User, error) {
+	call := s.UsersService.
+		List().Domain(domain).OrderBy("email")
+	return fetchAllUsers(call)
 }
 
 // GetAllUsersInDomain retrieves all users in domain.
