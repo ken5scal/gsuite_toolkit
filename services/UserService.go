@@ -74,7 +74,7 @@ func (s *UserService) GetAllDelegatedAdmins(domain string) ([]*admin.User, error
 
 // GetEmployees retrieves employees from Gsuite organization.
 // By Default customer key should be "my_customer"
-// max shoudl be integer lower than 500
+// max should be integer lower than 500
 func (s *UserService) GetEmployees(customer, key string, max int64) (*admin.Users, error) {
 	return s.UsersService.
 		List().
