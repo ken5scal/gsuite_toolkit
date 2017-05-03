@@ -39,7 +39,7 @@
 - 不正ログイン
  - [x] isSuspicious
 - ファイル権限
-- ファイル旧友設定
+- ファイル共有設定
 
 # Command
 * MY_EXECUTABLE [optional flags] <group | commands>
