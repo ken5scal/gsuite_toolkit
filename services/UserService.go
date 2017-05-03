@@ -11,6 +11,7 @@ import (
 // https://developers.google.com/admin-sdk/directory/v1/guides/manage-users
 type UserService struct {
 	*admin.UsersService
+	*admin.VerificationCodesService
 	*http.Client
 	listCall *admin.UsersListCall
 }
@@ -26,6 +27,7 @@ func (s *UserService) SetClient(client *http.Client) (error) {
 	if err != nil {
 		return err
 	}
+	s.VerificationCodesService = srv.VerificationCodes
 	s.UsersService = srv.Users
 	s.Client = client
 	s.listCall = s.UsersService.List().OrderBy("email")
@@ -97,6 +99,15 @@ func (s *UserService) GetUsersWithRareLogin(days int, domain string) ([]*admin.U
 	return goneUsers, nil
 }
 
+func (s *UserService) GetVerificationCodes(email string) ([]*admin.VerificationCode, error) {
+	vs,err := s.VerificationCodesService.List(email).Do()
+	if err != nil {
+		return nil, err
+	}
+	return vs.Items, nil
+}
+
+// fetchAllUsers fetches all Users
 func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 	var users []*admin.User
 	for {
@@ -111,3 +122,4 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 		}
 	}
 }
+
