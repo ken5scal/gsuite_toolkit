@@ -108,9 +108,14 @@ func (s *UserService) GetVerificationCodes(email string) ([]*admin.VerificationC
 	return vs.Items, nil
 }
 
+// Generate generates verification codes associated with email.
+func (s *UserService) GenerateCodes(email string) error {
+	return s.VerificationCodesService.Generate(email).Do()
+}
+
 // InvalidateCodes invalidates all verification codes associated with email
 func (s *UserService) InvalidateCodes(email string) error {
-	return s.VerificationCodesService.Generate(email).Do()
+	return s.VerificationCodesService.Invalidate(email).Do()
 }
 
 // fetchAllUsers fetches all Users
