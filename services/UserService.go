@@ -152,7 +152,7 @@ func body() string {
 	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
 
-func createUser(familyName, givenName, email, password string) *admin.User {
+func createUserObject(familyName, givenName, email, password string) *admin.User {
 	return &admin.User{
 		Name: &admin.UserName{
 			FamilyName: familyName,
