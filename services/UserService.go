@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 	"crypto/sha1"
-	"io"
 	"fmt"
 )
 
@@ -153,16 +152,14 @@ func body() string {
 	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
 
-func createUser(familyName, givenName, emaiil, domain string) {
-
-	shaPass := sha1.Sum([]byte("password"))
-	fmt.Print()
-	hoge := &admin.User{
+func createUser(familyName, givenName, email, password string) *admin.User {
+	return &admin.User{
 		Name: &admin.UserName{
 			FamilyName: familyName,
 			GivenName: givenName,
 		},
-		Password: fmt.Sprintf("%x", shaPass),
+		PrimaryEmail: email,
+		Password: fmt.Sprintf("%x", sha1.Sum([]byte(password))),
 		HashFunction: "SHA-1",
 		ChangePasswordAtNextLogin: true,
 	}
