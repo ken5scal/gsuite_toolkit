@@ -140,3 +140,12 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 	}
 }
 
+func requestLine(method string, email string) string {
+	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
+	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
+		"Content-Type: application/json\n\n" + body()
+}
+
+func body() string {
+	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
+}
