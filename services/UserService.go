@@ -4,6 +4,9 @@ import (
 	"google.golang.org/api/admin/directory/v1"
 	"net/http"
 	"time"
+	"crypto/sha1"
+	"io"
+	"fmt"
 )
 
 // UserService provides User related administration Task
@@ -152,6 +155,17 @@ func body() string {
 
 func createUser(familyName, givenName, emaiil, domain string) {
 
+	shaPass := sha1.Sum([]byte("password"))
+	fmt.Print()
+	hoge := &admin.User{
+		Name: &admin.UserName{
+			FamilyName: familyName,
+			GivenName: givenName,
+		},
+		Password: fmt.Sprintf("%x", shaPass),
+		HashFunction: "SHA-1",
+		ChangePasswordAtNextLogin: true,
+	}
 }
 
 /**
@@ -162,7 +176,7 @@ POST https://www.googleapis.com/admin/directory/v1/users
     "familyName": "Family2",
     "givenName": "Given2"
   },
-  "password": "ae2b657b7bcf5d2404aef5b718d96c37f974b8aa",
+  "password": "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8",
   "primaryEmail": "family2.given2@ken5scal01.com",
   "hashFunction": "SHA-1",
   "changePasswordAtNextLogin": true,
