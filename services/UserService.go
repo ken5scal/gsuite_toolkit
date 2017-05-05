@@ -155,6 +155,8 @@ func createUser(familyName, givenName, emaiil, domain string) {
 }
 
 /**
+POST https://www.googleapis.com/admin/directory/v1/users
+
 {
   "name": {
     "familyName": "Family2",
