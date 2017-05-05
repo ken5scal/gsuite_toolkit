@@ -142,13 +142,21 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 	}
 }
 
-func requestLine(method string, email string) string {
+func requestLine(method string, email string) (string, error) {
+	req, err := http.NewRequest(http.MethodPost, "https://www.googleapis.com/batch", nil)
+	if err != nil {
+		return "", err
+	}
 	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
+	req.Header.Add("content-type", "multipart/mixed; boundary=batch_0123456789")
+	req.Header.Add("authorization", "Bearer someToken")
 	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
-		"Content-Type: application/json\n\n" + body()
+		"Content-Type: application/json\n\n" + body(), nil
 }
 
 func body() string {
+	boundary := "batch_0123456789"
+	header_for_each_request := "--" + boundary + "\nContent-Type: application/http\n\n"
 	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
 
