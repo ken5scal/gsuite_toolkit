@@ -153,3 +153,26 @@ func body() string {
 func createUser(familyName, givenName, emaiil, domain string) {
 
 }
+
+/**
+{
+  "name": {
+    "familyName": "Family2",
+    "givenName": "Given2"
+  },
+  "password": "ae2b657b7bcf5d2404aef5b718d96c37f974b8aa",
+  "primaryEmail": "family2.given2@ken5scal01.com",
+  "hashFunction": "SHA-1",
+  "changePasswordAtNextLogin": true,
+  "emails": [
+    {
+      "address": "kengoscal@gmail.com",
+      "type": "other",
+    },
+    {
+      "address": "suzuki.kengo@moneyforward.co.jp",
+      "type": "other",
+    },
+  ]
+}
+ */
