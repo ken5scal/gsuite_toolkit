@@ -149,3 +149,7 @@ func requestLine(method string, email string) string {
 func body() string {
 	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
+
+func createUser(familyName, givenName, emaiil, domain string) {
+
+}
