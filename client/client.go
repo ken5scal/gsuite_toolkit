@@ -56,11 +56,11 @@ func (config *ClientConfig) Build() (*http.Client, error) {
 		return nil, errors.New(fmt.Sprintf("Unable to parse client secret file to config: %v", err))
 	}
 
-	token := GetToken(c)
+	token := getToken(c)
 	return c.Client(context.Background(), token), nil
 }
 
-func GetToken(config *oauth2.Config) *oauth2.Token {
+func getToken(config *oauth2.Config) *oauth2.Token {
 	cacheFile, err := tokenCacheFile()
 	if err != nil {
 		log.Fatalf("Unable to get path to cached credential file. %v", err)
