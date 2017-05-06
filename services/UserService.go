@@ -7,8 +7,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"encoding/csv"
-	"golang.org/x/oauth2"
-	"errors"
+	"github.com/ken5scal/gsuite_toolkit/client"
 )
 
 // UserService provides User related administration Task
@@ -148,19 +147,15 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 func (s *UserService) constructOuterRequest() (string, error) {
 	url := "https://www.googleapis.com/batch"
 	boundary := "Boundary_12345"
-	if _, ok := s.Client.Transport.(oauth2.Transport); !ok {
-		return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
-	}
-
-	token, err := s.Client.Transport.(oauth2.Transport).Source.Token()
+	token, err := client.GetAccessToken(s.Client)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(token.AccessToken)
+	fmt.Println(token)
 
 	req, _ := http.NewRequest(http.MethodPost, url, nil)
 	req.Header.Add("content-type", "multipart/mixed; boundary=" + boundary)
-	req.Header.Add("authorization", "Bearer " + token.AccessToken)
+	req.Header.Add("authorization", "Bearer " + token)
 	return "", nil
 }
 

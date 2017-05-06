@@ -42,7 +42,7 @@ func (config *ClientConfig) setDomain(domainName string) *ClientConfig {
 	return config
 }
 
-// NewClient Generate New Client
+// Build Generate New Client
 func (config *ClientConfig) Build() (*http.Client, error) {
 	b, err := ioutil.ReadFile(config.clientSecretFileName)
 	if err != nil {
@@ -56,11 +56,11 @@ func (config *ClientConfig) Build() (*http.Client, error) {
 		return nil, errors.New(fmt.Sprintf("Unable to parse client secret file to config: %v", err))
 	}
 
-	token := getToken(c)
+	token := GetToken(c)
 	return c.Client(context.Background(), token), nil
 }
 
-func getToken(config *oauth2.Config) *oauth2.Token {
+func GetToken(config *oauth2.Config) *oauth2.Token {
 	cacheFile, err := tokenCacheFile()
 	if err != nil {
 		log.Fatalf("Unable to get path to cached credential file. %v", err)
@@ -129,4 +129,16 @@ func saveToken(file string, token *oauth2.Token) {
 	}
 	defer f.Close()
 	json.NewEncoder(f).Encode(token)
+}
+
+func GetAccessToken(client *http.Client) (string, error) {
+	if _, ok := client.Transport.(oauth2.Transport); !ok {
+		return nil, errors.New(fmt.Sprintf("Invalid type: %T", client.Transport))
+	}
+
+	token, err := client.Transport.(oauth2.Transport).Source.Token()
+	if err != nil {
+		return nil, err
+	}
+	return token.AccessToken, nil
 }
