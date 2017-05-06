@@ -34,13 +34,13 @@
  - [x] リカバリコード
 - ユーザーバルク作成
  - [x] list
- - [ ] 作成
- - [ ] 通知   
+ - [x] 作成
 - 不正ログイン
  - [x] isSuspicious
 - ファイル権限
 - ファイル共有設定
 - [ ] 出力のJson化
+- [ ] エラーの出力(JSON)
 
 # Command
 * MY_EXECUTABLE [optional flags] <group | commands>

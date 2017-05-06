@@ -46,6 +46,7 @@ func (action LoginAction) GetAllAdminUsers(domain string) error {
 	}
 	hoge, err := action.user.GetAllDelegatedAdmins(domain)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	users = append(users, hoge...)
