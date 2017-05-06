@@ -15,6 +15,7 @@ import (
 	"net/http/httputil"
 	"bytes"
 	"strings"
+	"io/ioutil"
 )
 
 // UserService provides User related administration Task
@@ -173,6 +174,17 @@ func (s *UserService) ConstructOuterRequest() (string, error) {
 	fmt.Println("Dumpling Outer Request")
 	fmt.Println(string(requestDump))
 	fmt.Println()
+
+	res, err := s.Client.Do(req)
+	defer res.Body.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return "", nil
 }
 
@@ -193,7 +205,7 @@ func constructMultiPartMixedPayload(filePath, boundary string) string {
 	//reader = csv.NewReader(csv_file)
 
 	//for {
-	for  i:=0; i<3 ;i++ {
+	for  i:=0; i<1 ;i++ {
 		//row, err = reader.Read()
 		//if err == io.EOF {
 		//	return payload + "--" + boundary + "--"
