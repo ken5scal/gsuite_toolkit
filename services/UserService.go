@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"encoding/csv"
 	"github.com/ken5scal/gsuite_toolkit/client"
+	"os"
+	"log"
+	"io"
 )
 
 // UserService provides User related administration Task
@@ -159,28 +162,41 @@ func (s *UserService) constructOuterRequest() (string, error) {
 	return "", nil
 }
 
-func constructPayload(filePath string) string {
+// constructMultiPartMixedPayload constructs payload(body) as specified in rfc1341
+// https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+func constructMultiPartMixedPayload(filePath, boundary string) string {
 	var reader *csv.Reader
-	var ron []string
+	var row []string
 	var payload string
-	boundary := "Boundary_12345"
-}
 
-func requestLine(method string, email string) (string, error) {
-	req, err := http.NewRequest(http.MethodPost, "https://www.googleapis.com/batch", nil)
+	header := "--" + boundary + "\nContent-Type: application/http\n\n"
+
+	csv_file, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		log.Fatalln(err)
 	}
-	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
-	req.Header.Add("content-type", "multipart/mixed; boundary=batch_0123456789")
-	req.Header.Add("authorization", "Bearer your_auth_token")
-	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
-		"Content-Type: application/json\n\n" + body(), nil
+	defer csv_file.Close()
+	reader = csv.NewReader(csv_file)
+
+	for {
+		row, err = reader.Read()
+		if err == io.EOF {
+			return payload + "--" + boundary + "--"
+		}
+
+		if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
+			payload = payload + header + innerPartRequestLine("PUT", row[5]) + "\n\n"
+		}
+	}
 }
 
-func body() string {
-	boundary := "batch_0123456789"
-	header_for_each_request := "--" + boundary + "\nContent-Type: application/http\n\n"
+func innerPartRequestLine(method string, email string) (string) {
+	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
+	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
+		"Content-Type: application/json\n\n" + innerPartBody()
+}
+
+func innerPartBody() string {
 	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
 
