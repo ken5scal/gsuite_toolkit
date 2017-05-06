@@ -160,7 +160,6 @@ func (s *UserService) ConstructOuterRequest() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("Token: %v\n", token)
 
 	payload := constructMultiPartMixedPayload("", boundary)
 	req, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(payload))
