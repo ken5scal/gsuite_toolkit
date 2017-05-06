@@ -132,13 +132,13 @@ func saveToken(file string, token *oauth2.Token) {
 }
 
 func GetAccessToken(client *http.Client) (string, error) {
-	if _, ok := client.Transport.(oauth2.Transport); !ok {
-		return nil, errors.New(fmt.Sprintf("Invalid type: %T", client.Transport))
+	if _, ok := client.Transport.(*oauth2.Transport); !ok {
+		return "", errors.New(fmt.Sprintf("Invalid type: %T", client.Transport))
 	}
 
-	token, err := client.Transport.(oauth2.Transport).Source.Token()
+	token, err := client.Transport.(*oauth2.Transport).Source.Token()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	return token.AccessToken, nil
 }

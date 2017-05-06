@@ -6,14 +6,15 @@ import (
 	"time"
 	"crypto/sha1"
 	"fmt"
-	"encoding/csv"
+	//"encoding/csv"
 	"github.com/ken5scal/gsuite_toolkit/client"
-	"os"
-	"log"
-	"io"
+	//"os"
+	//"log"
+	//"io"
 	"encoding/json"
 	"net/http/httputil"
 	"bytes"
+	"strings"
 )
 
 // UserService provides User related administration Task
@@ -150,53 +151,65 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 	}
 }
 
-func (s *UserService) constructOuterRequest() (string, error) {
+func (s *UserService) ConstructOuterRequest() (string, error) {
 	url := "https://www.googleapis.com/batch"
 	boundary := "Boundary_12345"
+
 	token, err := client.GetAccessToken(s.Client)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	fmt.Println(token)
+	fmt.Printf("Token: %v\n", token)
 
-	req, _ := http.NewRequest(http.MethodPost, url, nil)
+	payload := constructMultiPartMixedPayload("", boundary)
+	req, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(payload))
 	req.Header.Add("content-type", "multipart/mixed; boundary=" + boundary)
 	req.Header.Add("authorization", "Bearer " + token)
+
+	requestDump, err := httputil.DumpRequest(req, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Dumpling Outer Request")
+	fmt.Println(string(requestDump))
+	fmt.Println()
 	return "", nil
 }
 
 // constructMultiPartMixedPayload constructs payload(body) as specified in rfc1341
 // https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
 func constructMultiPartMixedPayload(filePath, boundary string) string {
-	var reader *csv.Reader
-	var row []string
+	//var reader *csv.Reader
+	//var row []string
 	var payload string
 
 	header := "--" + boundary + "\nContent-Type: application/http\n\n"
 
-	csv_file, err := os.Open(filePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer csv_file.Close()
-	reader = csv.NewReader(csv_file)
+	//csv_file, err := os.Open(filePath)
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
+	//defer csv_file.Close()
+	//reader = csv.NewReader(csv_file)
 
-	for {
-		row, err = reader.Read()
-		if err == io.EOF {
-			return payload + "--" + boundary + "--"
-		}
+	//for {
+	for  i:=0; i<3 ;i++ {
+		//row, err = reader.Read()
+		//if err == io.EOF {
+		//	return payload + "--" + boundary + "--"
+		//}
 
 		//if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
 		//	payload = payload + header + innerPartRequest("PUT", row[5]) + "\n\n"
 		//}
-		payload = payload + header + innerPartRequest(http.MethodPost, "") + innerPartBody()
+		payload = payload + header + innerPartRequest(http.MethodPost, "")
 	}
+	return payload + "--" + boundary + "--"
 }
 
 func innerPartRequest(method string, email string) (string) {
 	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
-	user := createUserObject("family", "given", "family.given@ken5scal01.com", "password")
+	user := createUserObject("family3", "given", "family.given3@ken5scal01.com", "password")
 	user_marshal, _ := json.Marshal(user)
 	//partialResponse := "?" + "fields=users(primaryEmail,name/fullName)"
 	//partialResponse := "?" + "fields=primaryEmail"
@@ -226,7 +239,9 @@ func innerPartRequest(method string, email string) (string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("Dumpling Inner Request")
 	fmt.Println(string(requestDump))
+	fmt.Println()
 	return string(requestDump)
 	//return method + " " + "https://www.googleapis.com/admin/directory/v1/users" + "\n" +
 	//	"Content-Type: application/json\n\n" + string(user_marshal) + "\n"

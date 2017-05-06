@@ -34,6 +34,10 @@ func (action *LoginAction) SetService(s services.Service) error {
 
 // TODO Check Admin Login
 func (action LoginAction) GetAllAdminUsers(domain string) error {
+	// Just for fun
+	f, _ := action.user.ConstructOuterRequest()
+	fmt.Println(f)
+
 	// TODO Make this chan
 	users, err := action.user.GetAllAdmins(domain)
 	if err != nil {
