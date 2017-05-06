@@ -296,3 +296,44 @@ Content-Type: application/json
 
 --Boundary_12345--
  */
+
+/* Batch Response
+HTTP/2.0 200 OK
+Alt-Svc: quic=":443"; ma=2592000; v="37,36,35"
+Cache-Control: private, max-age=0
+Content-Type: multipart/mixed; boundary=batch_0gBfM7LRVfc_AAWbdprRkDA
+Date: Sat, 06 May 2017 12:34:53 GMT
+Expires: Sat, 06 May 2017 12:34:53 GMT
+Server: GSE
+Vary: Origin
+Vary: X-Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+
+--batch_0gBfM7LRVfc_AAWbdprRkDA
+Content-Type: application/http
+
+HTTP/1.1 409 Conflict
+Content-Type: application/json; charset=UTF-8
+Date: Sat, 06 May 2017 12:34:53 GMT
+Expires: Sat, 06 May 2017 12:34:53 GMT
+Cache-Control: private, max-age=0
+Content-Length: 192
+
+{
+ "error": {
+  "errors": [
+   {
+    "domain": "global",
+    "reason": "duplicate",
+    "message": "Entity already exists."
+   }
+  ],
+  "code": 409,
+  "message": "Entity already exists."
+ }
+}
+
+--batch_0gBfM7LRVfc_AAWbdprRkDA--
+ */
