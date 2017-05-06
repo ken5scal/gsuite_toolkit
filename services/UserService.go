@@ -202,7 +202,7 @@ func constructMultiPartMixedPayload(filePath, boundary string) string {
 		//if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
 		//	payload = payload + header + innerPartRequest("PUT", row[5]) + "\n\n"
 		//}
-		payload = payload + header + innerPartRequest(http.MethodPost, "")
+		payload = payload + header + innerPartRequest(http.MethodPost, "") + "\n"
 	}
 	return payload + "--" + boundary + "--"
 }
