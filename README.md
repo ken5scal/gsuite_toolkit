@@ -33,8 +33,8 @@
  - [x] 2sv
  - [x] リカバリコード
 - ユーザーバルク作成
- - [x] list
- - [x] 作成
+ - ~~[x] 作成~~
+ - [ ] Do it using go func. multipart/mix is hard because it is hard to check inner responses status
 - 不正ログイン
  - [x] isSuspicious
 - ファイル権限
