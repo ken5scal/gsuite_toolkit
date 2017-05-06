@@ -11,6 +11,7 @@ import (
 	"os"
 	"log"
 	"io"
+	"encoding/json"
 )
 
 // UserService provides User related administration Task
@@ -184,9 +185,10 @@ func constructMultiPartMixedPayload(filePath, boundary string) string {
 			return payload + "--" + boundary + "--"
 		}
 
-		if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
-			payload = payload + header + innerPartRequestLine("PUT", row[5]) + "\n\n"
-		}
+		//if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
+		//	payload = payload + header + innerPartRequestLine("PUT", row[5]) + "\n\n"
+		//}
+		payload = payload + header + innerPartRequestLine(http.MethodPost, "") + innerPartBody()
 	}
 }
 
@@ -197,7 +199,10 @@ func innerPartRequestLine(method string, email string) (string) {
 }
 
 func innerPartBody() string {
-	return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
+	user := createUserObject("family", "given", "family.given@ken5scal01.com", "password")
+	user_marshal, _ := json.Marshal(user)
+	return string(user_marshal) + "\n"
+	//return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
 }
 
 func createUserObject(familyName, givenName, email, password string) *admin.User {
