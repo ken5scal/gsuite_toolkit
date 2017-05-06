@@ -295,3 +295,21 @@ POST https://www.googleapis.com/admin/directory/v1/users
   ]
 }
  */
+
+/* BatchRequest Example
+POST /batch HTTP/1.1
+Host: www.googleapis.com
+Authorization: Bearer ya29.GltCBISb_LJXYXWujeQsXwKrXCjfHdFS83WV7UtQdM_MiC6mYWryO0Cu2fHga0WhjMRGz9pNS8Dy9clU27j3EaP5ywaauZnTGL3FBwaCMNgsUbLGRn5Yoxxa8i0-
+Content-Type: multipart/mixed; boundary=Boundary_12345
+
+--Boundary_12345
+Content-Type: application/http
+
+POST /admin/directory/v1/users HTTP/1.1
+Host: www.googleapis.com
+Content-Type: application/json
+
+{"changePasswordAtNextLogin":true,"hashFunction":"SHA-1","name":{"familyName":"family3","givenName":"given"},"password":"5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8","primaryEmail":"family.given3@ken5scal01.com"}
+
+--Boundary_12345--
+ */

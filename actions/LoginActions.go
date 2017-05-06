@@ -41,6 +41,7 @@ func (action LoginAction) GetAllAdminUsers(domain string) error {
 	// TODO Make this chan
 	users, err := action.user.GetAllAdmins(domain)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	hoge, err := action.user.GetAllDelegatedAdmins(domain)
