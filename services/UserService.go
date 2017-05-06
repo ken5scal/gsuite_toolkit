@@ -186,23 +186,18 @@ func constructMultiPartMixedPayload(filePath, boundary string) string {
 		}
 
 		//if strings.Contains(row[5], "@") && !strings.Contains(payload, row[5]) {
-		//	payload = payload + header + innerPartRequestLine("PUT", row[5]) + "\n\n"
+		//	payload = payload + header + innerPartRequest("PUT", row[5]) + "\n\n"
 		//}
-		payload = payload + header + innerPartRequestLine(http.MethodPost, "") + innerPartBody()
+		payload = payload + header + innerPartRequest(http.MethodPost, "") + innerPartBody()
 	}
 }
 
-func innerPartRequestLine(method string, email string) (string) {
+func innerPartRequest(method string, email string) (string) {
 	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
-	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
-		"Content-Type: application/json\n\n" + innerPartBody()
-}
-
-func innerPartBody() string {
 	user := createUserObject("family", "given", "family.given@ken5scal01.com", "password")
 	user_marshal, _ := json.Marshal(user)
-	return string(user_marshal) + "\n"
-	//return "{\n" + "\"orgUnitPath\": \"/社員・委託社員・派遣社員・アルバイト\"\n" + "}\n"
+	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
+		"Content-Type: application/json\n\n" + string(user_marshal) + "\n"
 }
 
 func createUserObject(familyName, givenName, email, password string) *admin.User {
