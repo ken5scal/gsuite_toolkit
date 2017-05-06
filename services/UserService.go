@@ -6,6 +6,9 @@ import (
 	"time"
 	"crypto/sha1"
 	"fmt"
+	"encoding/csv"
+	"golang.org/x/oauth2"
+	"errors"
 )
 
 // UserService provides User related administration Task
@@ -142,6 +145,32 @@ func fetchAllUsers(call *admin.UsersListCall) ([]*admin.User, error) {
 	}
 }
 
+func (s *UserService) constructOuterRequest() (string, error) {
+	url := "https://www.googleapis.com/batch"
+	boundary := "Boundary_12345"
+	if _, ok := s.Client.Transport.(oauth2.Transport); !ok {
+		return nil, errors.New(fmt.Sprintf("Invalid type: %T", s))
+	}
+
+	token, err := s.Client.Transport.(oauth2.Transport).Source.Token()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(token.AccessToken)
+
+	req, _ := http.NewRequest(http.MethodPost, url, nil)
+	req.Header.Add("content-type", "multipart/mixed; boundary=" + boundary)
+	req.Header.Add("authorization", "Bearer " + token.AccessToken)
+	return "", nil
+}
+
+func constructPayload(filePath string) string {
+	var reader *csv.Reader
+	var ron []string
+	var payload string
+	boundary := "Boundary_12345"
+}
+
 func requestLine(method string, email string) (string, error) {
 	req, err := http.NewRequest(http.MethodPost, "https://www.googleapis.com/batch", nil)
 	if err != nil {
@@ -149,7 +178,7 @@ func requestLine(method string, email string) (string, error) {
 	}
 	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
 	req.Header.Add("content-type", "multipart/mixed; boundary=batch_0123456789")
-	req.Header.Add("authorization", "Bearer someToken")
+	req.Header.Add("authorization", "Bearer your_auth_token")
 	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
 		"Content-Type: application/json\n\n" + body(), nil
 }
