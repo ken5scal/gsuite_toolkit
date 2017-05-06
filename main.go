@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/csv"
 	"errors"
 	"fmt"
 	"github.com/BurntSushi/toml"
@@ -9,12 +8,10 @@ import (
 	"github.com/ken5scal/gsuite_toolkit/client"
 	"github.com/ken5scal/gsuite_toolkit/models"
 	"github.com/urfave/cli"
-	"io"
 	"log"
 	"net/http"
 	"os"
 	"sort"
-	"strings"
 	"github.com/ken5scal/gsuite_toolkit/services"
 	"github.com/asaskevich/govalidator"
 )
