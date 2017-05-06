@@ -12,6 +12,8 @@ import (
 	"log"
 	"io"
 	"encoding/json"
+	"net/http/httputil"
+	"bytes"
 )
 
 // UserService provides User related administration Task
@@ -196,8 +198,38 @@ func innerPartRequest(method string, email string) (string) {
 	//return "GET https://www.googleapis.com/admin/directory/v1/users/" +  email
 	user := createUserObject("family", "given", "family.given@ken5scal01.com", "password")
 	user_marshal, _ := json.Marshal(user)
-	return method + " " + "https://www.googleapis.com/admin/directory/v1/users/" + email + "\n" +
-		"Content-Type: application/json\n\n" + string(user_marshal) + "\n"
+	//partialResponse := "?" + "fields=users(primaryEmail,name/fullName)"
+	//partialResponse := "?" + "fields=primaryEmail"
+
+	r, _ := http.NewRequest(
+		http.MethodPost,
+		"https://www.googleapis.com/admin/directory/v1/users",
+		bytes.NewBuffer(user_marshal))
+	r.Header.Add("Content-Type", "application/json")
+
+	//var request []string
+	//url := fmt.Sprintf("%v %v %v", r.Method, r.URL, r.Proto)
+	//request = append(request, url)
+	//request = append(request, fmt.Sprintf("Host: %v", r.Host))
+	//for name, headers := range r.Header {
+	//	name = strings.ToLower(name)
+	//	for _, h := range headers {
+	//		request = append(request, fmt.Sprintf("%v: %v", name, h))
+	//	}
+	//}
+	//r.ParseForm()
+	//request = append(request, "\n")
+	//request = append(request, r.Form.Encode())
+	//fmt.Println(strings.Join(request, "\n"))
+
+	requestDump, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(requestDump))
+	return string(requestDump)
+	//return method + " " + "https://www.googleapis.com/admin/directory/v1/users" + "\n" +
+	//	"Content-Type: application/json\n\n" + string(user_marshal) + "\n"
 }
 
 func createUserObject(familyName, givenName, email, password string) *admin.User {
