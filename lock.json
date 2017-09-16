@@ -3,11 +3,10 @@
     "projects": [
         {
             "name": "cloud.google.com/go",
-            "version": "v0.7.0",
-            "revision": "2e6a95edb1071d750f6d7db777bf66cd2997af6c",
+            "version": "v0.13.0",
+            "revision": "5a9e19d4e1e41a734154e44a2132b358afb49a03",
             "packages": [
-                "compute/metadata",
-                "internal"
+                "compute/metadata"
             ]
         },
         {
@@ -20,8 +19,8 @@
         },
         {
             "name": "github.com/asaskevich/govalidator",
-            "version": "v5",
-            "revision": "7b3beb6df3c42abd3509abfc3bcacc0fbfb7c877",
+            "version": "v7",
+            "revision": "73945b6115bfbbcc57d89b7316e28109364124e1",
             "packages": [
                 "."
             ]
@@ -29,23 +28,15 @@
         {
             "name": "github.com/golang/protobuf",
             "branch": "master",
-            "revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
+            "revision": "11b8df160996e00fd4b55cbaafb3d84ec6d50fa8",
             "packages": [
                 "proto"
             ]
         },
         {
-            "name": "github.com/googleapis/gax-go",
-            "branch": "master",
-            "revision": "9af46dd5a1713e8b5cd71106287eba3cefdde50b",
-            "packages": [
-                "."
-            ]
-        },
-        {
             "name": "github.com/urfave/cli",
             "branch": "master",
-            "revision": "8ba6f23b6e36d03666a14bd9421f5e3efcb59aca",
+            "revision": "7fb9c86b14e6a702a4157ccb5a863f07d844a207",
             "packages": [
                 "."
             ]
@@ -53,22 +44,16 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "0b588ed7a0cd59c271d128ec8c429c1c1607e8ab",
+            "revision": "8351a756f30f1297fe94bbf4b767ec589c6ea6d0",
             "packages": [
                 "context",
-                "context/ctxhttp",
-                "http2",
-                "http2/hpack",
-                "idna",
-                "internal/timeseries",
-                "lex/httplex",
-                "trace"
+                "context/ctxhttp"
             ]
         },
         {
             "name": "golang.org/x/oauth2",
             "branch": "master",
-            "revision": "a6bd8cefa1811bd24b86f8902872e4e8225f74c4",
+            "revision": "13449ad91cb26cb47661c1b080790392170385fd",
             "packages": [
                 ".",
                 "google",
@@ -78,25 +63,9 @@
             ]
         },
         {
-            "name": "golang.org/x/text",
-            "branch": "master",
-            "revision": "a9a820217f98f7c8a207ec1e45a874e1fe12c478",
-            "packages": [
-                "internal/gen",
-                "internal/triegen",
-                "internal/ucd",
-                "secure/bidirule",
-                "transform",
-                "unicode/bidi",
-                "unicode/cldr",
-                "unicode/norm",
-                "unicode/rangetable"
-            ]
-        },
-        {
             "name": "google.golang.org/api",
             "branch": "master",
-            "revision": "fbbaff1827317122a8a0e1b24de25df8417ce87b",
+            "revision": "272693b6005d0c0dc1c7933ce47dd51ee50dbedc",
             "packages": [
                 "admin/directory/v1",
                 "admin/reports/v1",
@@ -121,25 +90,6 @@
                 "internal/remote_api",
                 "internal/urlfetch",
                 "urlfetch"
-            ]
-        },
-        {
-            "name": "google.golang.org/grpc",
-            "version": "v1.2.1",
-            "revision": "8050b9cbc271307e5a716a9d782803d09b0d6f2d",
-            "packages": [
-                ".",
-                "codes",
-                "credentials",
-                "grpclog",
-                "internal",
-                "keepalive",
-                "metadata",
-                "naming",
-                "peer",
-                "stats",
-                "tap",
-                "transport"
             ]
         }
     ]
