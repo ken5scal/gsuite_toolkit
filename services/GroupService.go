@@ -58,3 +58,12 @@ func (s *GroupService) RetrieveAllGroups(domain, email string) ([]*admin.Group, 
 		call.PageToken(g.NextPageToken)
 	}
 }
+
+func (s * GroupService) CreateGroup(groupName string) (*admin.Group, error) {
+	group := &admin.Group{
+		Name:groupName,
+		Email: groupName + "@droidkaigi.jp",
+		}
+	call := s.GroupsService.Insert(group)
+	return call.Do()
+}
